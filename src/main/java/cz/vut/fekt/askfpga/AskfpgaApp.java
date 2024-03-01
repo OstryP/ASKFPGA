@@ -11,7 +11,7 @@ public class AskfpgaApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("home-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 800, 500);
         stage.setTitle("Home");
         stage.setScene(scene);
         stage.show();

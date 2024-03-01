@@ -5,22 +5,22 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.vut.fekt.askfpga.controllers.HomeController">
    <children>
-      <Label layoutX="286.0" layoutY="40.0" text="Hlavní Stránka" />
-      <Button fx:id="konfiguraceButton" layoutX="274.0" layoutY="121.0" mnemonicParsing="false" onAction="#onKonfiguraceButtonClick" text="Konfigurace" />
-      <Button fx:id="monitorovaniButton" layoutX="274.0" layoutY="168.0" mnemonicParsing="false" onAction="#onMonitorovaniButtonClick" text="Monitorování" />
-      <Button fx:id="rizeniButton" layoutX="274.0" layoutY="212.0" mnemonicParsing="false" onAction="#onRizeniButtonClick" text="Řízení" />
-      <Text fx:id="infoText" layoutX="289.0" layoutY="309.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-      <MenuBar layoutY="2.0">
+      <Label layoutX="262.0" layoutY="74.0" text="Hlavní Stránka" />
+      <Button fx:id="konfiguraceButton" layoutX="260.0" layoutY="117.0" mnemonicParsing="false" onAction="#onKonfiguraceButtonClick" text="Konfigurace" />
+      <Button fx:id="monitorovaniButton" layoutX="256.0" layoutY="160.0" mnemonicParsing="false" onAction="#onMonitorovaniButtonClick" text="Monitorování" />
+      <Button fx:id="rizeniButton" layoutX="276.0" layoutY="208.0" mnemonicParsing="false" onAction="#onRizeniButtonClick" text="Řízení" />
+      <TextArea fx:id="infoTextArea" editable="false" layoutX="200.0" layoutY="267.0" prefHeight="101.0" prefWidth="200.0" promptText="ZADNE ZARIZENI" />
+      <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
           <Menu mnemonicParsing="false" text="Connect">
             <items>
-              <MenuItem fx:id="connectMenuItem" mnemonicParsing="false" onAction="#onConnectMenuItem" text="Connect 0" />
-                  <MenuItem fx:id="disconnectMenuItem" mnemonicParsing="false" onAction="#onDisconnectMenuItem" text="Disconnect 0" />
+              <MenuItem fx:id="connectMenuItem" mnemonicParsing="false" onAction="#onConnectMenuItemClick" text="Connect 0" />
+                  <MenuItem fx:id="disconnectMenuItem" mnemonicParsing="false" onAction="#onDisconnectMenuItemClick" text="Disconnect 0" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">

@@ -6,6 +6,7 @@ import cz.vut.fekt.askfpga.WrapperJNA;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
 
 public class HomeController {
@@ -22,7 +23,7 @@ public class HomeController {
     private Button rizeniButton;
 
     @FXML
-    private Text infoText;
+    private TextArea infoTextArea;
 
     @FXML
     private MenuItem connectMenuItem;
@@ -32,29 +33,31 @@ public class HomeController {
 
     @FXML
     protected void onKonfiguraceButtonClick (){
-        infoText.setText("konfigurace");
+        infoTextArea.setText("konfigurace");
     }
 
     @FXML
     protected void onMonitorovaniButtonClick (){
-        infoText.setText("monitorovani");
+        infoTextArea.setText("monitorovani");
     }
 
     @FXML
     protected void onRizeniButtonClick (){
-        infoText.setText("rizeni");
+        infoTextArea.setText("rizeni");
     }
 
     @FXML
-    protected void onConnectMenuItem (){
+    protected void onConnectMenuItemClick(){
         devPointer = WrapperJNA.wrapper.nfb_open("0");
         System.out.println(devPointer);
         NfbDevice nfbDevice = new NfbDevice(devPointer);
+        infoTextArea.setText("INFORMACE O ZARIZENI");
     }
 
     @FXML
-    protected void onDisconnectMenuItem (){
+    protected void onDisconnectMenuItemClick(){
         WrapperJNA.wrapper.nfb_close(devPointer);
+        infoTextArea.setText("ZARIZENI BYLO ODPOJENO");
     }
 
 

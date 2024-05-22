@@ -113,7 +113,8 @@ public class HomeController {
         System.out.println(devPointer);
         infoTextArea.setText("INFORMACE O ZARIZENI");
 
-        WrapperJNA.wrappernfb.getProp(devPointer);
+       // WrapperJNA.wrappernfb.getProp(devPointer);
+        WrapperJNA.wrappernfb.print_component_list(devPointer);
 
 
 

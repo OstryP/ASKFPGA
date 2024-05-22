@@ -113,6 +113,7 @@ public class HomeController {
         System.out.println(devPointer);
         infoTextArea.setText("INFORMACE O ZARIZENI");
 
+        WrapperJNA.wrappernfb.getProp(devPointer);
 
 
 
@@ -146,6 +147,7 @@ public class PointerHexToText {
         devPointer = WrapperJNA.wrappernfb.nfb_open("0");
         System.out.println(devPointer);
         infoTextArea.setText("INFORMACE O ZARIZENI");
+
     }
 
     @FXML

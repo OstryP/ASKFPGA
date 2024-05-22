@@ -29,13 +29,13 @@ public interface WrapperJNA extends Library {
     Pointer fdt_getprop(Pointer fdt, int fdt_offset, String path, IntByReference len);
 
 
-    int nfb_comp_find(Pointer dev, Pointer compatible, int index);
-
-    nfb_comp_open(Pointer dev, int node);
-    void nfb_comp_write32(Pointer comp, int offset, byte data);
+    Pointer nfb_comp_open(Pointer dev, int node);
+    void nfb_comp_write32(Pointer comp, int offset, int data);
     int nfb_comp_read32(Pointer comp, int offset);
+    void nfb_comp_close(Pointer comp);
 
-    boolean fdt_get_path(Pointer fdt, int node_offset, String path, int BUFFER_SIZE);
+
+    boolean fdt_get_path(Pointer fdt, int node_offset, byte[] path, int BUFFER_SIZE);
 
     int fdt_next_node(Pointer fdt, int offset, IntByReference BUFFER_SIZE);
 
@@ -68,7 +68,7 @@ public interface WrapperJNA extends Library {
         fdt = nfb_get_fdt(dev);
         int offset = fdt_path_offset(fdt, "/firmware");
         Pointer compatible;
-        String path = new String(new byte[256]);
+        byte path[] = new byte[256];
 
         while (offset>=0){
             IntByReference len = new IntByReference(0);
@@ -76,11 +76,14 @@ public interface WrapperJNA extends Library {
             prop = fdt_getprop(fdt, offset, "reg", len);
             if (len.getValue() != -1) {
                 fdt_get_path(fdt, offset, path, 256);
+                //uložit offset, ten je důležitý
+                //v dropdown menu zobrazit třeba path
                 compatible = fdt_getprop(fdt, offset, "compatible", null);
 
-                System.out.println(compatible + path + (prop.getByte(0) << 24) + (prop.getByte(1) << 16) + (prop.getByte(2) << 8) + (prop.getByte(3)));
+                String s = new String(path, StandardCharsets.UTF_8);
 
-                System.out.println(nfb_comp_find(dev, compatible, 0) + offset);
+                System.out.println(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
+
 
             }
 

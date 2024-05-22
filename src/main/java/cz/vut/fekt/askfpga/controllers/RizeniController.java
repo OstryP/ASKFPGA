@@ -34,7 +34,8 @@ public class RizeniController {
 
     @FXML
     protected void onPoslatButtonClick () {
-
+        //https://cesnet.github.io/ndk-sw/libnfb-example.html#ndp-data-transmit-example
+        //zobrait data, povolit jejich upravu, nezavirat dokud nevypnu celou applikaci
 
     }
 

@@ -1,0 +1,7 @@
+[
+    {
+        "compatible": "cesnet.minimal.app_core",
+        "offset": 0,
+        "data": 1
+    }
+]

@@ -9,8 +9,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.nio.file.*;
 
 import java.io.IOException;
@@ -26,22 +24,10 @@ public class KonfiguraceController {
     private Button backButton;
 
     @FXML
-    private Button importButton;
-
-    @FXML
-    private Button zobrazitButton;
-
-    @FXML
-    private Button zapsatButton;
-
-    @FXML
     private TextField outputTextField;
 
     @FXML
     private ListView<String> listView;
-
-    @FXML
-    private Button obnovitButton;
 
     @FXML
     private TextArea infoTextArea;
@@ -60,12 +46,7 @@ public class KonfiguraceController {
         ListFilesInDirectory();
 
         if(AppState.getInstance().getConnected()){
-            StringBuilder info = new StringBuilder();
-            for (WrapperJNA.Paths prop : WrapperJNA.Paths.values()) {
-                String value = WrapperJNA.wrappernfb.getProp(AppState.getInstance().getDevPointer(), prop);
-                info.append(prop.name()).append(": ").append(value).append("\n");
-            }
-            infoTextArea.setText(info.toString());
+            infoTextArea.setText(AppState.getInstance().getDeviceInfo());
 
             ArrayList<String> components;
 

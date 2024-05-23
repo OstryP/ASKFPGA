@@ -46,13 +46,7 @@ public class HomeController {
 
         if(AppState.getInstance().getConnected()){
             connectButton.setText("Disconnect");
-
-            StringBuilder info = new StringBuilder();
-            for (WrapperJNA.Paths prop : WrapperJNA.Paths.values()) {
-                String value = WrapperJNA.wrappernfb.getProp(devPointer, prop);
-                info.append(prop.name()).append(": ").append(value).append("\n");
-            }
-            infoTextArea.setText(info.toString());
+            infoTextArea.setText(AppState.getInstance().getDeviceInfo());
         }
     }
 
@@ -78,7 +72,7 @@ public class HomeController {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("monitorovani-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
-            Stage stage = (Stage) konfiguraceButton.getScene().getWindow();
+            Stage stage = (Stage) monitorovaniButton.getScene().getWindow();
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -92,7 +86,7 @@ public class HomeController {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("rizeni-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
-            Stage stage = (Stage) konfiguraceButton.getScene().getWindow();
+            Stage stage = (Stage) rizeniButton.getScene().getWindow();
             stage.setScene(scene);
             stage.show();
         } catch (IOException e) {
@@ -107,7 +101,27 @@ public class HomeController {
             WrapperJNA.wrappernfb.nfb_close(devPointer);
             AppState.getInstance().setConnected(false);
             AppState.getInstance().clearSeries();
-            infoTextArea.setText("Zařízení bylo odpojeno");
+            AppState.getInstance().clearDeviceInfo();
+
+            if(AppState.getInstance().getoRx_que()!=null){
+                WrapperJNA.wrappernfb.ndp_close_rx_queue(AppState.getInstance().getoRx_que());
+                AppState.getInstance().setoRx_que(null);
+            }
+
+            if(AppState.getInstance().getoTx_que()!=null){
+                WrapperJNA.wrappernfb.ndp_close_tx_queue(AppState.getInstance().getoTx_que());
+                AppState.getInstance().setoTx_que(null);
+            }
+
+            if(AppState.getInstance().getOpenedComponents()!=null){
+                for (Pointer comp : AppState.getInstance().getOpenedComponents()) {
+                    WrapperJNA.wrappernfb.nfb_comp_close(comp);
+                }
+                AppState.getInstance().clearOpenedComponents();
+            }
+
+
+            infoTextArea.setText(AppState.getInstance().getDeviceInfo());
         }
 
         else {
@@ -124,12 +138,8 @@ public class HomeController {
                 AppState.getInstance().setConnected(true);
                 AppState.getInstance().setDevPointer(devPointer);
                 AppState.getInstance().setStartTime();
-                StringBuilder info = new StringBuilder();
-                for (WrapperJNA.Paths prop : WrapperJNA.Paths.values()) {
-                    String value = WrapperJNA.wrappernfb.getProp(devPointer, prop);
-                    info.append(prop.name()).append(": ").append(value).append("\n");
-                }
-                infoTextArea.setText(info.toString());
+                AppState.getInstance().setDeviceInfo();
+                infoTextArea.setText(AppState.getInstance().getDeviceInfo());
 
                 //WrapperJNA.wrappernfb.print_component_list(devPointer);
             }

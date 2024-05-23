@@ -7,12 +7,13 @@ import com.sun.jna.ptr.IntByReference;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 
 public interface WrapperJNA extends Library {
     WrapperJNA wrappernfb = Native.load("nfb", WrapperJNA.class);
     WrapperJNA wrapperfdt = Native.load("fdt", WrapperJNA.class);
+
 
     public enum Paths{
         BOARD_NAME("/board/", "board-name"),
@@ -56,9 +57,48 @@ public interface WrapperJNA extends Library {
 
     int fdt_next_node(Pointer fdt, int offset, IntByReference BUFFER_SIZE);
 
+    Pointer ndp_open_rx_queue(Pointer dev, int num);
+    Pointer ndp_open_tx_queue(Pointer dev, int num);
+
+    int ndp_queue_start(Pointer inter);
+
+    int NDP_PACKET_COUNT = 16;
+
+    int ndp_tx_burst_get(Pointer inter, Packet[] pkts, int NDP_PACKET_COUNT);
+    int ndp_rx_burst_get(Pointer inter, Packet[] pkts, int NDP_PACKET_COUNT);
+
+    void memset(byte[] data, int nula, int dataLength);
+
+    void ndp_tx_burst_flush(Pointer inter);
+
+    void ndp_rx_burst_flush(Pointer inter);
+
+    void ndp_rx_burst_put(Pointer rxq);
+
+    void ndp_tx_burst_put(Pointer tx);
+
+    void ndp_close_tx_queue(Pointer txq);
+
+    void ndp_close_rx_queue(Pointer rxq);
 
 
+    public class Packet {
+        public byte[] data;
+        public int header;
+        public int data_length;
+        public int header_length;
 
+        /*public Packet(int data, int header, int data_length, int header_length) {
+            this.data = data;
+            this.header = header;
+            this.data_length = data_length;
+            this.header_length = header_length;
+        }*/
+
+        public Packet() {
+
+        }
+    }
 
    public default String getProp(Pointer dev, Paths prop){
         Pointer fdt;
@@ -105,15 +145,128 @@ public interface WrapperJNA extends Library {
         return components;
     }
     public default void nfb_comp_write(int node, int offset, int data){
+
+
         Pointer comp = nfb_comp_open(AppState.getInstance().getDevPointer(), node);
+        if (comp != null && !AppState.getInstance().getOpenedComponents().contains(comp)){
+            AppState.getInstance().setOpenedComponents(comp);
+        }
         nfb_comp_write32(comp, offset, data);
     }
 
-
-
-
     public default int nfb_comp_read(int node, int offset){
+        /*if (!AppState.getInstance().getOpenedComponents().contains(node)) {
+            Pointer comp = nfb_comp_open(AppState.getInstance().getDevPointer(), node);
+        }
+        */
         Pointer comp = nfb_comp_open(AppState.getInstance().getDevPointer(), node);
+        if (comp != null && !AppState.getInstance().getOpenedComponents().contains(comp)){
+            AppState.getInstance().setOpenedComponents(comp);
+        }
         return nfb_comp_read32(comp, offset);
    }
+
+   public default void sendData(String queType, int num) throws InterruptedException {
+        if(Objects.equals(queType, "rxq")){
+            Pointer rxq = ndp_open_rx_queue(AppState.getInstance().getDevPointer(), num);
+            if (rxq!=null){
+                AppState.getInstance().setoRx_que(rxq);
+            }
+            ndp_queue_start(rxq);
+            Packet[] pkts = new Packet[NDP_PACKET_COUNT];
+            for (int i = 0; i < NDP_PACKET_COUNT; i++) {
+                pkts[i] = new Packet();
+                pkts[i].data_length = 64 + i;
+                pkts[i].data = new byte[64 + i];
+                pkts[i].header_length = 0;
+                pkts[i].data[5] = 1;
+            }
+
+            int ret = ndp_rx_burst_get(rxq, pkts, NDP_PACKET_COUNT);
+
+            for (int i = 0; i < ret; i++) {
+                memset(pkts[i].data, 0, pkts[i].data_length);
+                /* Pretend IPv4 */
+                pkts[i].data[13] = 0x08;
+            }
+
+            ndp_rx_burst_flush(rxq);
+
+
+
+            for (int bursts = 0; bursts < 32; bursts++) {
+                /* Let the library fill at most NDP_PACKET_COUNT, but it may be less */
+                ret = ndp_rx_burst_get(rxq, pkts, NDP_PACKET_COUNT);
+                if (ret == 0) {
+                    Thread.sleep(10);
+                    continue;
+                }
+
+                for (int i = 0; i < ret; i++) {
+                    /* If the metadata is present, it typically holds packet timestamp at offset 0 */
+                    if (pkts[i].header_length >= 8){
+                        //printf("Timestamp: %lld\n", *((uint64_t*) (pkts[i].header + 0)));
+                    }
+
+                    if ((bursts % 5) == 4){
+                        ndp_rx_burst_put(rxq);
+                    }
+                }
+            }
+            ndp_rx_burst_put(rxq);
+        }
+
+       if(Objects.equals(queType, "txq")){
+           Pointer txq = ndp_open_tx_queue(AppState.getInstance().getDevPointer(), num);
+           if (txq!=null){
+               AppState.getInstance().setoTx_que(txq);
+           }
+           ndp_queue_start(txq);
+           Packet[] pkts = new Packet[NDP_PACKET_COUNT];
+           for (int i = 0; i < NDP_PACKET_COUNT; i++) {
+               pkts[i] = new Packet();
+               pkts[i].data_length = 64 + i;
+               pkts[i].data = new byte[64 + i];
+               pkts[i].header_length = 0;
+               pkts[i].data[5] = 1;
+           }
+
+           int ret = ndp_tx_burst_get(txq, pkts, NDP_PACKET_COUNT);
+
+           for (int i = 0; i < ret; i++) {
+               memset(pkts[i].data, 0, pkts[i].data_length);
+               /* Pretend IPv4 */
+               pkts[i].data[13] = 0x08;
+           }
+
+           ndp_tx_burst_flush(txq);
+
+
+
+           for (int bursts = 0; bursts < 32; bursts++) {
+               /* Let the library fill at most NDP_PACKET_COUNT, but it may be less */
+               ret = ndp_tx_burst_get(txq, pkts, NDP_PACKET_COUNT);
+               if (ret == 0) {
+                   Thread.sleep(10);
+                   continue;
+               }
+
+               for (int i = 0; i < ret; i++) {
+                   /* If the metadata is present, it typically holds packet timestamp at offset 0 */
+                   if (pkts[i].header_length >= 8){
+                       //printf("Timestamp: %lld\n", *((uint64_t*) (pkts[i].header + 0)));
+                   }
+
+                   if ((bursts % 5) == 4){
+                       ndp_tx_burst_put(txq);
+                   }
+               }
+           }
+           ndp_tx_burst_put(txq);
+       }
+   }
+
+
+
+
 }

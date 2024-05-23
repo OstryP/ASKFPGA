@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToolBar?>
@@ -26,8 +27,8 @@
             </Label>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="35.0">
                <children>
-                  <Label text="Výběr tozhraní" />
-                  <Label text="Výběr vstupu" />
+                  <ComboBox fx:id="rozhraniComboBox" prefHeight="30.0" prefWidth="150.0" promptText="Výběr rozhraní" />
+                  <ComboBox fx:id="numComboBox" prefHeight="30.0" prefWidth="150.0" promptText="Číslo rozhraní" />
                   <Button fx:id="poslatButton" mnemonicParsing="false" onAction="#onPoslatButtonClick" text="Poslat">
                      <font>
                         <Font size="15.0" />

@@ -1,6 +1,8 @@
 Konfigurace importButtonClick compatible zapsat jako node/int?
+Zavírat otevřené komponenty při odpojení karty
+numComboBox, automaticky získat hodnoty
 
-
+zapsat/zobrazit/import ButtonClick přiřadit node z dropdown menu
 
 
 

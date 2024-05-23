@@ -123,6 +123,7 @@ public class HomeController {
             else {
                 AppState.getInstance().setConnected(true);
                 AppState.getInstance().setDevPointer(devPointer);
+                AppState.getInstance().setStartTime();
                 StringBuilder info = new StringBuilder();
                 for (WrapperJNA.Paths prop : WrapperJNA.Paths.values()) {
                     String value = WrapperJNA.wrappernfb.getProp(devPointer, prop);

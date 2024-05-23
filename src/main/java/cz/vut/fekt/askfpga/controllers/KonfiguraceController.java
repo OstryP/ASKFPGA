@@ -6,15 +6,19 @@ import cz.vut.fekt.askfpga.WrapperJNA;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.nio.file.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class KonfiguraceController {
 
@@ -31,7 +35,7 @@ public class KonfiguraceController {
     private Button zapsatButton;
 
     @FXML
-    private TextArea outputTextArea;
+    private TextField outputTextField;
 
     @FXML
     private ListView<String> listView;
@@ -44,6 +48,12 @@ public class KonfiguraceController {
 
     @FXML
     private ComboBox<String> comboBox;
+
+    @FXML
+    private TextField offsetTextField;
+    @FXML
+    private TextField valTextField;
+
 
     public void initialize() {
         listView.getItems().clear();
@@ -84,25 +94,82 @@ public class KonfiguraceController {
     @FXML
     protected void onObnovitButtonClick () {
         listView.getItems().clear();
-
         ListFilesInDirectory();
     }
 
     @FXML
     protected void onZobrazitButtonClick () {
-        outputTextArea.setText("Zobrazena hex hodnota");
+        if(AppState.getInstance().getConnected()){
+            int node = 0; //adresa z comboboxu
+            String selectedItem = comboBox.getSelectionModel().getSelectedItem();
 
+            int value = Integer.parseInt(offsetTextField.getText());
+            outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(node, value)));
+        }
+
+        else {
+            outputTextField.setText("Zařízení není připojeno");
+        }
     }
 
     @FXML
     protected void onZapsatButtonClick () {
+        if(AppState.getInstance().getConnected()){
+            int node = 0; //adresa z comboboxu
+            String selectedItem = comboBox.getSelectionModel().getSelectedItem();
+
+            int offset = Integer.parseInt(offsetTextField.getText());
+            int data = Integer.parseInt(valTextField.getText());
+            WrapperJNA.wrappernfb.nfb_comp_write(node, offset, data);
+            outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(node, offset)));
+        }
+        else {
+            outputTextField.setText("Zařízení není připojeno");
+        }
+
 
     }
 
     @FXML
-    protected void onImportButtonClick () {
-        System.out.println(listView.getSelectionModel().getSelectedItem());
+    protected void onImportButtonClick () throws IOException {
+        if(AppState.getInstance().getConnected()){
+            Object[][] configArray = loadJsonData(listView.getSelectionModel().getSelectedItem());
 
+            for (Object[] config : configArray) {
+                String compatible = (String) config[0];
+                int offset = (int) config[1];
+                int data = (int) config[2];
+                //WrapperJNA.wrappernfb.nfb_comp_write(compatible, offset, data);
+            }
+        }
+        else {
+            outputTextField.setText("Zařízení není připojeno");
+        }
+    }
+
+    private Object[][] loadJsonData(String fileName) throws IOException {
+        String currentDirectory = System.getProperty("user.dir");
+        String relativePath = "src\\main\\resources\\cz\\vut\\fekt\\askfpga\\Konfigurační soubory";
+        Path directoryPath = Paths.get(currentDirectory, relativePath).normalize();
+        Path filePath = directoryPath.resolve(fileName).normalize();
+
+        String content = new String(Files.readAllBytes(filePath));
+        JSONArray jsonArray = new JSONArray(content);
+
+        Object[][] configArray = new Object[jsonArray.length()][3];
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            JSONObject config = jsonArray.getJSONObject(i);
+
+            String compatible = config.getString("compatible");
+            int offset = config.getInt("offset");
+            int data = config.getInt("data");
+
+            configArray[i][0] = compatible;
+            configArray[i][1] = offset;
+            configArray[i][2] = data;
+        }
+        return configArray;
     }
 
 

@@ -2,6 +2,7 @@ module cz.vut.fekt.askfpga {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.sun.jna;
+    requires org.json;
 
 
     opens cz.vut.fekt.askfpga to javafx.fxml;

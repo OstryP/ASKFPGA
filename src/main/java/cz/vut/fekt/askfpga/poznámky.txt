@@ -1,3 +1,11 @@
+Konfigurace importButtonClick compatible zapsat jako node/int?
+
+
+
+
+
+
+
 Sdílené:
     Informace o kartě:
 

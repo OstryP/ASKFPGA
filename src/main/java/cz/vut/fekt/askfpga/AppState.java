@@ -15,7 +15,7 @@ public class AppState {
 
     private boolean connected;
 
-    Pointer devPointer;
+    private Pointer devPointer;
 
     private AppState() {
         series = new XYChart.Series<>();

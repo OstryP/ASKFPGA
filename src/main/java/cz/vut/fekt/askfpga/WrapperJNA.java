@@ -20,8 +20,6 @@ public interface WrapperJNA extends Library {
         FPGA_UID("/board/", "fpga-uid"),
         CARD_NAME("/firmware/","card-name"),
         PROJECT_NAME("/firmware/","project-name"),
-        PROJECT_VARIANT("/firmware/","project-variant"),
-        PROJECT_VERSION("/firmware/","project-version"),
         BUILD_TOOL("/firmware/","build-tool"),
         BUILD_AUTHOR("/firmware/","build-author");
 
@@ -48,7 +46,7 @@ public interface WrapperJNA extends Library {
 
     Pointer nfb_comp_open(Pointer dev, int node);
     void nfb_comp_write32(Pointer comp, int offset, int data);
-    int nfb_comp_read32(Pointer comp, int offset);
+    byte nfb_comp_read32(Pointer comp, int offset);
     void nfb_comp_close(Pointer comp);
 
     int nc_adc_sensors_get_temp(Pointer dev, IntByReference val);
@@ -103,13 +101,19 @@ public interface WrapperJNA extends Library {
             }
 
             offset = fdt_next_node(fdt, offset, null);
-
-
-
-
         }
         return components;
-
+    }
+    public default void nfb_comp_write(int node, int offset, int data){
+        Pointer comp = nfb_comp_open(AppState.getInstance().getDevPointer(), node);
+        nfb_comp_write32(comp, offset, data);
     }
 
+
+
+
+    public default int nfb_comp_read(int node, int offset){
+        Pointer comp = nfb_comp_open(AppState.getInstance().getDevPointer(), node);
+        return nfb_comp_read32(comp, offset);
+   }
 }

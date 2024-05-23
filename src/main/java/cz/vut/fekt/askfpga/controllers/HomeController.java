@@ -4,16 +4,11 @@ import com.sun.jna.Pointer;
 import cz.vut.fekt.askfpga.AppState;
 import cz.vut.fekt.askfpga.AskfpgaApp;
 import cz.vut.fekt.askfpga.WrapperJNA;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -24,8 +19,6 @@ public class HomeController {
     Pointer devPointer;
 
     String zarizeni;
-
-
 
     @FXML
     private Button konfiguraceButton;
@@ -44,18 +37,22 @@ public class HomeController {
     @FXML
     private TextArea infoTextArea;
 
-    @FXML
-    private MenuItem connectMenuItem;
-
-    @FXML
-    private MenuItem disconnectMenuItem;
-
     public void initialize() {
         zarizeni = AppState.getInstance().getZarizeni();
-        System.out.println(zarizeni);
+
         if(zarizeni!=null){
-            System.out.println(zarizeni+"notnull");
             connectTextField.setText(zarizeni);
+        }
+
+        if(AppState.getInstance().getConnected()){
+            connectButton.setText("Disconnect");
+
+            StringBuilder info = new StringBuilder();
+            for (WrapperJNA.Paths prop : WrapperJNA.Paths.values()) {
+                String value = WrapperJNA.wrappernfb.getProp(devPointer, prop);
+                info.append(prop.name()).append(": ").append(value).append("\n");
+            }
+            infoTextArea.setText(info.toString());
         }
     }
 
@@ -105,57 +102,36 @@ public class HomeController {
 
     @FXML
     protected void onConnectButtonClick (){
-        zarizeni = connectTextField.getText();
-        System.out.println(zarizeni);
-        AppState.getInstance().setZarizeni(zarizeni);
 
-        devPointer = WrapperJNA.wrappernfb.nfb_open(zarizeni);
-        System.out.println(devPointer);
-        infoTextArea.setText("INFORMACE O ZARIZENI");
-
-       // WrapperJNA.wrappernfb.getProp(devPointer);
-        WrapperJNA.wrappernfb.print_component_list(devPointer);
-
-
-
-
-    }
-
-    /*
-
-public class PointerHexToText {
-        Pointer ptr = MyCLibrary.INSTANCE.getPointer();
-
-        String readableText = ptr.getString(0);
-
-        System.out.println("Readable text from pointer: " + readableText);
-
-        byte[] byteArray = ptr.getByteArray(0, readableText.length());
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : byteArray) {
-            hexString.append(String.format("%02X ", b));
+        if (AppState.getInstance().getConnected()){
+            WrapperJNA.wrappernfb.nfb_close(devPointer);
+            AppState.getInstance().setConnected(false);
+            AppState.getInstance().clearSeries();
+            infoTextArea.setText("Zařízení bylo odpojeno");
         }
-        System.out.println("Hex value: " + hexString.toString().trim());
+
+        else {
+            zarizeni = connectTextField.getText();
+
+            AppState.getInstance().setZarizeni(zarizeni);
+
+            devPointer = WrapperJNA.wrappernfb.nfb_open(zarizeni);
+
+            if (devPointer == null){
+                infoTextArea.setText("Nepodařilo se připojik k zařízení");
+            }
+            else {
+                AppState.getInstance().setConnected(true);
+                AppState.getInstance().setDevPointer(devPointer);
+                StringBuilder info = new StringBuilder();
+                for (WrapperJNA.Paths prop : WrapperJNA.Paths.values()) {
+                    String value = WrapperJNA.wrappernfb.getProp(devPointer, prop);
+                    info.append(prop.name()).append(": ").append(value).append("\n");
+                }
+                infoTextArea.setText(info.toString());
+
+                //WrapperJNA.wrappernfb.print_component_list(devPointer);
+            }
+        }
     }
-}
-*/
-
-
-
-
-    @FXML
-    protected void onConnectMenuItemClick(){
-        devPointer = WrapperJNA.wrappernfb.nfb_open("0");
-        System.out.println(devPointer);
-        infoTextArea.setText("INFORMACE O ZARIZENI");
-
-    }
-
-    @FXML
-    protected void onDisconnectMenuItemClick(){
-        WrapperJNA.wrappernfb.nfb_close(devPointer);
-        infoTextArea.setText("ZARIZENI BYLO ODPOJENO");
-    }
-
-
 }

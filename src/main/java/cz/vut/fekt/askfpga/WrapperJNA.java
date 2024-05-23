@@ -6,16 +6,33 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public interface WrapperJNA extends Library {
     WrapperJNA wrappernfb = Native.load("nfb", WrapperJNA.class);
     WrapperJNA wrapperfdt = Native.load("fdt", WrapperJNA.class);
 
-    /*enum Paths{
+    public enum Paths{
+        BOARD_NAME("/board/", "board-name"),
+        SERIAL_NUMBER("/board/", "serial-number"),
+        FPGA_UID("/board/", "fpga-uid"),
+        CARD_NAME("/firmware/","card-name"),
+        PROJECT_NAME("/firmware/","project-name"),
+        PROJECT_VARIANT("/firmware/","project-variant"),
+        PROJECT_VERSION("/firmware/","project-version"),
+        BUILD_TOOL("/firmware/","build-tool"),
+        BUILD_AUTHOR("/firmware/","build-author");
 
-    };
-*/
+        private final String path;
+        private final String label;
+
+        Paths(String path, String label) {
+            this.path = path;
+            this.label = label;
+        }
+    }
     int BufferSize = 256;
 
     Pointer nfb_open(String name);
@@ -34,6 +51,8 @@ public interface WrapperJNA extends Library {
     int nfb_comp_read32(Pointer comp, int offset);
     void nfb_comp_close(Pointer comp);
 
+    int nc_adc_sensors_get_temp(Pointer dev, IntByReference val);
+
 
     boolean fdt_get_path(Pointer fdt, int node_offset, byte[] path, int BUFFER_SIZE);
 
@@ -43,32 +62,27 @@ public interface WrapperJNA extends Library {
 
 
 
-   /* public default String getProp(Pointer dev){
+   public default String getProp(Pointer dev, Paths prop){
         Pointer fdt;
         fdt = nfb_get_fdt(dev);
-        int fdt_offset = fdt_path_offset(fdt, paths.path);
+        int fdt_offset = fdt_path_offset(fdt, prop.path);
         IntByReference len = new IntByReference(0);
-        Pointer vysledek = fdt_getprop(fdt, fdt_offset, paths.label, len);
+        Pointer vysledek = fdt_getprop(fdt, fdt_offset, prop.label, len);
         System.out.println(len.getValue());
         byte[] bytes = vysledek.getByteArray(0, len.getValue());
         System.out.println(bytes[0]);
 
         String s = new String(bytes, StandardCharsets.UTF_8);
         return s;
+    }
 
-        //string do utf8, int ze 4 bytu
-
-    }*/
-
-
-
-
-    public default void print_component_list(Pointer dev){
+    public default ArrayList<String> print_component_list(Pointer dev){
         Pointer fdt;
         fdt = nfb_get_fdt(dev);
         int offset = fdt_path_offset(fdt, "/firmware");
         Pointer compatible;
         byte path[] = new byte[256];
+        ArrayList<String> components = new ArrayList<>();
 
         while (offset>=0){
             IntByReference len = new IntByReference(0);
@@ -84,6 +98,7 @@ public interface WrapperJNA extends Library {
 
                 System.out.println(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
 
+                components.add(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
 
             }
 
@@ -93,34 +108,8 @@ public interface WrapperJNA extends Library {
 
 
         }
+        return components;
 
     }
-
-
-
-
-
-
-
-    /*fdt = nfb_get_fdt(dev);
-    fdt_offset = fdt_path_offset(fdt, "/firmware/");
-
-    fdt_getprop(fdt, fdt_offset, "project-name", &len);
-
-    Pointer fdt_getprop()
-    */
-
-
-    /*
-    project: Project name
-    prop = fdt_getprop(fdt, fdt_offset, "project-name", &len);
-
-    project-version: Project version
-    prop = fdt_getprop(fdt, fdt_offset, "project-version", &len);
-
-    card: Card name
-    prop = fdt_getprop(fdt, fdt_offset, "card-name", &len);
-    */
-
 
 }

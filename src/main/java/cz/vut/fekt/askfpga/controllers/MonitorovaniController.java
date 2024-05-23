@@ -2,6 +2,7 @@ package cz.vut.fekt.askfpga.controllers;
 
 import cz.vut.fekt.askfpga.AppState;
 import cz.vut.fekt.askfpga.AskfpgaApp;
+import cz.vut.fekt.askfpga.WrapperJNA;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -20,10 +21,10 @@ public class MonitorovaniController {
     private Button backButton;
 
     @FXML
-    private TextArea intoTextArea;
+    private TextArea infoTextArea;
 
     @FXML
-    private TextArea podrobneintoTextArea;
+    private TextArea podrobneinfoTextArea;
 
     @FXML
     private LineChart<Number, Number> grafLineChart;
@@ -37,6 +38,15 @@ public class MonitorovaniController {
         ((NumberAxis) grafLineChart.getYAxis()).setLabel("Teplota ve °C");
 
         grafLineChart.getData().add(AppState.getInstance().getSeries());
+
+        if(AppState.getInstance().getConnected()){
+            StringBuilder info = new StringBuilder();
+            for (WrapperJNA.Paths prop : WrapperJNA.Paths.values()) {
+                String value = WrapperJNA.wrappernfb.getProp(AppState.getInstance().getDevPointer(), prop);
+                info.append(prop.name()).append(": ").append(value).append("\n");
+            }
+            infoTextArea.setText(info.toString());
+        }
 
     }
 

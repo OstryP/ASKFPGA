@@ -7,7 +7,6 @@ import com.sun.jna.ptr.IntByReference;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -103,6 +102,16 @@ public interface WrapperJNA extends Library {
         }
     }
 
+    public class myNode {
+        public String path;
+        public int offset;
+
+        public myNode(String path, int offset){
+            this.path = path;
+            this.offset=offset;
+        }
+    }
+
    public default String getProp(Pointer dev, Paths prop){
         Pointer fdt;
         fdt = nfb_get_fdt(dev);
@@ -117,13 +126,13 @@ public interface WrapperJNA extends Library {
         return s;
     }
 
-    public default ArrayList<String> print_component_list(Pointer dev){
+    public default ArrayList<myNode> print_component_list(Pointer dev){
         Pointer fdt;
         fdt = nfb_get_fdt(dev);
         int offset = fdt_path_offset(fdt, "/firmware");
         Pointer compatible;
         byte path[] = new byte[256];
-        ArrayList<String> components = new ArrayList<>();
+        ArrayList<myNode> components = new ArrayList<>();
 
         while (offset>=0){
             IntByReference len = new IntByReference(0);
@@ -135,13 +144,14 @@ public interface WrapperJNA extends Library {
                 //v dropdown menu zobrazit třeba path
                 //compatible = fdt_getprop(fdt, offset, "compatible", null);
 
-                //String s = new String(path, StandardCharsets.UTF_8);
-                String s = Arrays.toString(path);
+                String s = new String(path, StandardCharsets.UTF_8);
+                myNode newNode = new myNode(s, offset);
+
 
                 /*System.out.println(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
                 components.add(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));*/
 
-                components.add(s);
+                components.add(newNode);
             }
 
             offset = fdt_next_node(fdt, offset, null);

@@ -13,6 +13,7 @@ import java.nio.file.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -40,6 +41,8 @@ public class KonfiguraceController {
     @FXML
     private TextField valTextField;
 
+    private ArrayList<WrapperJNA.myNode> components;
+
 
     public void initialize() {
         listView.getItems().clear();
@@ -48,9 +51,11 @@ public class KonfiguraceController {
         if(AppState.getInstance().getConnected()){
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
 
-            ArrayList<String> components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
+            components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
+            for(WrapperJNA.myNode component : components){
 
-            comboBox.getItems().addAll(components);
+                comboBox.getItems().add(component.path);
+            }
         }
     }
 
@@ -79,11 +84,15 @@ public class KonfiguraceController {
     @FXML
     protected void onZobrazitButtonClick () {
         if(AppState.getInstance().getConnected()){
-            int node = 0; //adresa z comboboxu
             String selectedItem = comboBox.getSelectionModel().getSelectedItem();
 
-            int value = Integer.parseInt(offsetTextField.getText());
-            outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(node, value)));
+            for(WrapperJNA.myNode component : components){
+                if (Objects.equals(component.path, selectedItem)){
+                    int value = Integer.parseInt(offsetTextField.getText());
+                    outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(component.offset, value)));
+                    break;
+                }
+            }
         }
 
         else {
@@ -94,13 +103,20 @@ public class KonfiguraceController {
     @FXML
     protected void onZapsatButtonClick () {
         if(AppState.getInstance().getConnected()){
-            int node = 0; //adresa z comboboxu
             String selectedItem = comboBox.getSelectionModel().getSelectedItem();
 
-            int offset = Integer.parseInt(offsetTextField.getText());
-            int data = Integer.parseInt(valTextField.getText());
-            WrapperJNA.wrappernfb.nfb_comp_write(node, offset, data);
-            outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(node, offset)));
+            for(WrapperJNA.myNode component : components){
+                if (Objects.equals(component.path, selectedItem)){
+                    int offset = Integer.parseInt(offsetTextField.getText());
+                    int data = Integer.parseInt(valTextField.getText());
+                    WrapperJNA.wrappernfb.nfb_comp_write(component.offset, offset, data);
+                    outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(component.offset, offset)));
+                    break;
+                }
+            }
+
+
+
         }
         else {
             outputTextField.setText("Zařízení není připojeno");

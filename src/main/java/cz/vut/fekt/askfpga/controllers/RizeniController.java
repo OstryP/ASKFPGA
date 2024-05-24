@@ -8,10 +8,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class RizeniController {
 
@@ -27,6 +31,9 @@ public class RizeniController {
     @FXML
     private ComboBox<String> numComboBox;
 
+    @FXML
+    private ListView<String> listView;
+
     public void initialize() {
         if(AppState.getInstance().getConnected()){
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
@@ -36,6 +43,9 @@ public class RizeniController {
 
         numComboBox.getItems().add("0");
         numComboBox.getItems().add("1");
+
+        listView.getItems().clear();
+        ListFilesInDirectory();
     }
 
     @FXML
@@ -53,12 +63,27 @@ public class RizeniController {
     }
 
     @FXML
-    protected void onPoslatButtonClick () throws InterruptedException {
-        WrapperJNA.wrappernfb.sendData(rozhraniComboBox.getSelectionModel().getSelectedItem(), Integer.parseInt(numComboBox.getSelectionModel().getSelectedItem()));
-
+    protected void onPoslatButtonClick () throws IOException {
+        //WrapperJNA.wrappernfb.sendData(rozhraniComboBox.getSelectionModel().getSelectedItem(), Integer.parseInt(numComboBox.getSelectionModel().getSelectedItem()));
+        WrapperJNA.wrappernfb.importData(listView.getSelectionModel().getSelectedItem(), Integer.parseInt(numComboBox.getSelectionModel().getSelectedItem()));
         //https://cesnet.github.io/ndk-sw/libnfb-example.html#ndp-data-transmit-example
         //zobrait data, povolit jejich upravu, nezavirat dokud nevypnu celou applikaci
+    }
 
+
+    void ListFilesInDirectory() {
+        String currentDirectory = System.getProperty("user.dir");
+
+        String relativePath = "Data";
+        Path directoryPath = Paths.get(currentDirectory, relativePath).normalize();
+        try {
+            Files.list(directoryPath)
+                    .filter(Files::isRegularFile)
+                    .forEach(file -> listView.getItems().add(file.getFileName().toString()));
+        } catch (IOException e) {
+            System.err.println("Error accessing directory: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 

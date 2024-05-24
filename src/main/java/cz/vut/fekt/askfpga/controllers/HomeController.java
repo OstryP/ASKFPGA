@@ -16,8 +16,6 @@ import java.io.IOException;
 
 public class HomeController {
 
-    Pointer devPointer;
-
     String zarizeni;
 
     @FXML
@@ -98,9 +96,6 @@ public class HomeController {
     protected void onConnectButtonClick (){
 
         if (AppState.getInstance().getConnected()){
-            AppState.getInstance().setConnected(false);
-            AppState.getInstance().clearSeries();
-            AppState.getInstance().clearDeviceInfo();
 
             if(AppState.getInstance().getoRx_que()!=null){
                 WrapperJNA.wrappernfb.ndp_close_rx_queue(AppState.getInstance().getoRx_que());
@@ -119,7 +114,12 @@ public class HomeController {
                 AppState.getInstance().clearOpenedComponents();
             }
 
-            WrapperJNA.wrappernfb.nfb_close(devPointer);
+            AppState.getInstance().setConnected(false);
+            AppState.getInstance().clearSeries();
+            AppState.getInstance().clearDeviceInfo();
+
+            WrapperJNA.wrappernfb.nfb_close(AppState.getInstance().getDevPointer());
+            AppState.getInstance().setDevPointer(null);
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
         }
 
@@ -128,17 +128,18 @@ public class HomeController {
 
             AppState.getInstance().setZarizeni(zarizeni);
 
-            devPointer = WrapperJNA.wrappernfb.nfb_open(zarizeni);
+            AppState.getInstance().setDevPointer(WrapperJNA.wrappernfb.nfb_open(zarizeni));
 
-            if (devPointer == null){
+            if (AppState.getInstance().getDevPointer() == null){
                 infoTextArea.setText("Nepodařilo se připojik k zařízení");
             }
+
             else {
                 AppState.getInstance().setConnected(true);
-                AppState.getInstance().setDevPointer(devPointer);
                 AppState.getInstance().setStartTime();
                 AppState.getInstance().setDeviceInfo();
                 infoTextArea.setText(AppState.getInstance().getDeviceInfo());
+                connectButton.setText("Disconnect");
 
                 //WrapperJNA.wrappernfb.print_component_list(devPointer);
             }

@@ -89,7 +89,7 @@ public class KonfiguraceController {
             for(WrapperJNA.myNode component : components){
                 if (Objects.equals(component.path, selectedItem)){
                     int value = Integer.parseInt(offsetTextField.getText());
-                    outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(component.offset, value)));
+                    outputTextField.setText(String.valueOf(WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value)));
                     break;
                 }
             }
@@ -109,8 +109,8 @@ public class KonfiguraceController {
                 if (Objects.equals(component.path, selectedItem)){
                     int offset = Integer.parseInt(offsetTextField.getText());
                     int data = Integer.parseInt(valTextField.getText());
-                    WrapperJNA.wrappernfb.nfb_comp_write(component.offset, offset, data);
-                    outputTextField.setText(String.valueOf(WrapperJNA.wrappernfb.nfb_comp_read(component.offset, offset)));
+                    WrapperJNA.wrapperfpga.nfb_comp_write(component.offset, offset, data);
+                    outputTextField.setText(String.valueOf(WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, offset)));
                     break;
                 }
             }

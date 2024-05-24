@@ -3,9 +3,14 @@ package cz.vut.fekt.askfpga;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -48,8 +53,8 @@ public interface WrapperJNA extends Library {
 
 
     Pointer nfb_comp_open(Pointer dev, int node);
-    void nfb_comp_write32(Pointer comp, int offset, int data);
-    byte nfb_comp_read32(Pointer comp, int offset);
+    void comp_write32(Pointer comp, int offset, int data);
+    int comp_read32(Pointer comp, int offset);
     void nfb_comp_close(Pointer comp);
 
     double get_temperature(Pointer dev);
@@ -66,8 +71,8 @@ public interface WrapperJNA extends Library {
 
     int NDP_PACKET_COUNT = 16;
 
-    int ndp_tx_burst_get(Pointer inter, Packet[] pkts, int NDP_PACKET_COUNT);
-    int ndp_rx_burst_get(Pointer inter, Packet[] pkts, int NDP_PACKET_COUNT);
+    int ndp_tx_burst_get(Pointer inter, Packet pkts, int NDP_PACKET_COUNT);
+    int ndp_rx_burst_get(Pointer inter, Packet pkts, int NDP_PACKET_COUNT);
 
     void memset(byte[] data, int nula, int dataLength);
 
@@ -84,21 +89,12 @@ public interface WrapperJNA extends Library {
     void ndp_close_rx_queue(Pointer rxq);
 
 
-    public class Packet {
-        public byte[] data;
-        public int header;
+    public class Packet extends Structure {
+        public Pointer data;
+        public Pointer header;
         public int data_length;
         public int header_length;
-
-        /*public Packet(int data, int header, int data_length, int header_length) {
-            this.data = data;
-            this.header = header;
-            this.data_length = data_length;
-            this.header_length = header_length;
-        }*/
-
         public Packet() {
-
         }
     }
 
@@ -165,7 +161,7 @@ public interface WrapperJNA extends Library {
         if (comp != null && !AppState.getInstance().getOpenedComponents().contains(comp)){
             AppState.getInstance().setOpenedComponents(comp);
         }
-        nfb_comp_write32(comp, offset, data);
+        comp_write32(comp, offset, data);
     }
 
     public default int nfb_comp_read(int node, int offset){
@@ -177,10 +173,10 @@ public interface WrapperJNA extends Library {
         if (comp != null && !AppState.getInstance().getOpenedComponents().contains(comp)){
             AppState.getInstance().setOpenedComponents(comp);
         }
-        return nfb_comp_read32(comp, offset);
+        return comp_read32(comp, offset);
    }
 
-   public default void sendData(String queType, int num) throws InterruptedException {
+   /*public default void sendData(String queType, int num) throws InterruptedException {
         if(Objects.equals(queType, "rxq")){
             Pointer rxq = ndp_open_rx_queue(AppState.getInstance().getDevPointer(), num);
             if (rxq!=null){
@@ -188,39 +184,22 @@ public interface WrapperJNA extends Library {
             }
             ndp_queue_start(rxq);
             Packet[] pkts = new Packet[NDP_PACKET_COUNT];
-            for (int i = 0; i < NDP_PACKET_COUNT; i++) {
-                pkts[i] = new Packet();
-                pkts[i].data_length = 64 + i;
-                pkts[i].data = new byte[64 + i];
-                pkts[i].header_length = 0;
-                pkts[i].data[5] = 1;
-            }
-
-            int ret = ndp_rx_burst_get(rxq, pkts, NDP_PACKET_COUNT);
-
-            for (int i = 0; i < ret; i++) {
-                memset(pkts[i].data, 0, pkts[i].data_length);
-                /* Pretend IPv4 */
-                pkts[i].data[13] = 0x08;
-            }
-
-            ndp_rx_burst_flush(rxq);
-
-
 
             for (int bursts = 0; bursts < 32; bursts++) {
-                /* Let the library fill at most NDP_PACKET_COUNT, but it may be less */
-                ret = ndp_rx_burst_get(rxq, pkts, NDP_PACKET_COUNT);
+                //ret 1, čeká 1-2s, pak že nebyly přijatá data
+                int ret = ndp_rx_burst_get(rxq, pkts, NDP_PACKET_COUNT);
                 if (ret == 0) {
                     Thread.sleep(10);
                     continue;
                 }
 
                 for (int i = 0; i < ret; i++) {
-                    /* If the metadata is present, it typically holds packet timestamp at offset 0 */
+
                     if (pkts[i].header_length >= 8){
                         //printf("Timestamp: %lld\n", *((uint64_t*) (pkts[i].header + 0)));
                     }
+
+
 
                     if ((bursts % 5) == 4){
                         ndp_rx_burst_put(rxq);
@@ -240,45 +219,47 @@ public interface WrapperJNA extends Library {
            for (int i = 0; i < NDP_PACKET_COUNT; i++) {
                pkts[i] = new Packet();
                pkts[i].data_length = 64 + i;
-               pkts[i].data = new byte[64 + i];
                pkts[i].header_length = 0;
-               pkts[i].data[5] = 1;
            }
 
            int ret = ndp_tx_burst_get(txq, pkts, NDP_PACKET_COUNT);
 
            for (int i = 0; i < ret; i++) {
-               memset(pkts[i].data, 0, pkts[i].data_length);
-               /* Pretend IPv4 */
-               pkts[i].data[13] = 0x08;
+               pkts[i].data.setByte(13, 0x80);
            }
 
            ndp_tx_burst_flush(txq);
-
-
-
-           for (int bursts = 0; bursts < 32; bursts++) {
-               /* Let the library fill at most NDP_PACKET_COUNT, but it may be less */
-               ret = ndp_tx_burst_get(txq, pkts, NDP_PACKET_COUNT);
-               if (ret == 0) {
-                   Thread.sleep(10);
-                   continue;
-               }
-
-               for (int i = 0; i < ret; i++) {
-                   /* If the metadata is present, it typically holds packet timestamp at offset 0 */
-                   if (pkts[i].header_length >= 8){
-                       //printf("Timestamp: %lld\n", *((uint64_t*) (pkts[i].header + 0)));
-                   }
-
-                   if ((bursts % 5) == 4){
-                       ndp_tx_burst_put(txq);
-                   }
-               }
-           }
-           ndp_tx_burst_put(txq);
        }
-   }
+   }*/
+
+    public default void importData(String fileName, int num) throws IOException {
+        Pointer txq = ndp_open_tx_queue(AppState.getInstance().getDevPointer(), num);
+        if (txq!=null){
+            AppState.getInstance().setoTx_que(txq);
+        }
+        ndp_queue_start(txq);
+
+
+        String currentDirectory = System.getProperty("user.dir");
+        String relativePath = "Data";
+        Path directoryPath = java.nio.file.Paths.get(currentDirectory, relativePath).normalize();
+        Path filePath = directoryPath.resolve(fileName).normalize();
+        byte[] byteFiles = Files.readAllBytes(filePath);
+
+        Packet pkts = new Packet();
+        pkts.data_length = byteFiles.length;
+        int ret = ndp_tx_burst_get(txq, pkts, 1);
+
+        for (int i = 0; i<byteFiles.length; i++){
+            pkts.data.setByte(i, byteFiles[i]);
+        }
+
+        ndp_tx_burst_flush(txq);
+
+
+
+    }
+
 
 
 

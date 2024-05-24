@@ -4,6 +4,8 @@ numComboBox, automaticky získat hodnoty
 
 zapsat/zobrazit/import ButtonClick přiřadit node z dropdown menu
 
+načítání do comboboxu, string z byte, aby neignoroval nulu, ale aby se ukončil
+
 
 
 

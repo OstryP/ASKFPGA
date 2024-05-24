@@ -53,7 +53,7 @@ public interface WrapperJNA extends Library {
     byte nfb_comp_read32(Pointer comp, int offset);
     void nfb_comp_close(Pointer comp);
 
-    double nc_adc_sensors_get_temp(Pointer dev);
+    double get_temperature(Pointer dev);
 
 
     boolean fdt_get_path(Pointer fdt, int node_offset, byte[] path, int BUFFER_SIZE);

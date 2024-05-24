@@ -83,7 +83,7 @@ public class AppState {
             long durationInMillis = currentTime - startTime;
             int durationInMinutes = (int) (durationInMillis / 1000);
 
-            series.getData().add(new XYChart.Data<>(durationInMinutes, WrapperJNA.wrapperfpga.nc_adc_sensors_get_temp(devPointer)));
+            series.getData().add(new XYChart.Data<>(durationInMinutes, WrapperJNA.wrapperfpga.get_temperature(devPointer)));
         }
     }
 

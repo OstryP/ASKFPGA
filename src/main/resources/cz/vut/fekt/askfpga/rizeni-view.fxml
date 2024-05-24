@@ -50,13 +50,7 @@
                   </Label>
                   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="35.0">
                      <children>
-                        <ComboBox fx:id="rozhraniComboBox" disable="true" prefHeight="30.0" prefWidth="150.0" promptText="Výběr rozhraní" />
                         <ComboBox fx:id="numComboBox" prefHeight="30.0" prefWidth="150.0" promptText="Číslo rozhraní" />
-                        <Button fx:id="poslatButtonOld" disable="true" mnemonicParsing="false" onAction="#onPoslatButtonOldClick" text="Poslat">
-                           <font>
-                              <Font size="15.0" />
-                           </font>
-                        </Button>
                      </children>
                   </HBox>
                   <TextArea fx:id="transTextArea" prefHeight="200.0" prefWidth="200.0" text="Informace o přenosu" />

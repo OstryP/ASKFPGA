@@ -26,9 +26,6 @@ public class RizeniController {
     private TextArea infoTextArea;
 
     @FXML
-    private ComboBox<String> rozhraniComboBox;
-
-    @FXML
     private ComboBox<String> numComboBox;
 
     @FXML
@@ -38,8 +35,6 @@ public class RizeniController {
         if(AppState.getInstance().getConnected()){
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
         }
-        rozhraniComboBox.getItems().add("rxq");
-        rozhraniComboBox.getItems().add("txq");
 
         numComboBox.getItems().add("0");
         numComboBox.getItems().add("1");
@@ -84,6 +79,12 @@ public class RizeniController {
             System.err.println("Error accessing directory: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    protected void onObnovitButtonClick () {
+        listView.getItems().clear();
+        ListFilesInDirectory();
     }
 
 

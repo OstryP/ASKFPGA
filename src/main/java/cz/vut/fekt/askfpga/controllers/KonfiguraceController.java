@@ -48,9 +48,7 @@ public class KonfiguraceController {
         if(AppState.getInstance().getConnected()){
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
 
-            ArrayList<String> components;
-
-            components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
+            ArrayList<String> components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
 
             comboBox.getItems().addAll(components);
         }
@@ -107,8 +105,6 @@ public class KonfiguraceController {
         else {
             outputTextField.setText("Zařízení není připojeno");
         }
-
-
     }
 
     @FXML
@@ -130,7 +126,7 @@ public class KonfiguraceController {
 
     private Object[][] loadJsonData(String fileName) throws IOException {
         String currentDirectory = System.getProperty("user.dir");
-        String relativePath = "src\\main\\resources\\cz\\vut\\fekt\\askfpga\\Konfigurační soubory";
+        String relativePath = "Konfigurační soubory";
         Path directoryPath = Paths.get(currentDirectory, relativePath).normalize();
         Path filePath = directoryPath.resolve(fileName).normalize();
 
@@ -157,7 +153,7 @@ public class KonfiguraceController {
     void ListFilesInDirectory() {
         String currentDirectory = System.getProperty("user.dir");
 
-        String relativePath = "src\\main\\resources\\cz\\vut\\fekt\\askfpga\\Konfigurační soubory";
+        String relativePath = "Konfigurační soubory";
         Path directoryPath = Paths.get(currentDirectory, relativePath).normalize();
         try {
             Files.list(directoryPath)

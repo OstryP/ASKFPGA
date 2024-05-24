@@ -98,7 +98,6 @@ public class HomeController {
     protected void onConnectButtonClick (){
 
         if (AppState.getInstance().getConnected()){
-            WrapperJNA.wrappernfb.nfb_close(devPointer);
             AppState.getInstance().setConnected(false);
             AppState.getInstance().clearSeries();
             AppState.getInstance().clearDeviceInfo();
@@ -120,7 +119,7 @@ public class HomeController {
                 AppState.getInstance().clearOpenedComponents();
             }
 
-
+            WrapperJNA.wrappernfb.nfb_close(devPointer);
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
         }
 

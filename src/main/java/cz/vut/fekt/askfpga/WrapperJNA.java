@@ -7,6 +7,7 @@ import com.sun.jna.ptr.IntByReference;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
 
@@ -52,7 +53,7 @@ public interface WrapperJNA extends Library {
     byte nfb_comp_read32(Pointer comp, int offset);
     void nfb_comp_close(Pointer comp);
 
-    int nc_adc_sensors_get_temp(Pointer dev, IntByReference val);
+    double nc_adc_sensors_get_temp(Pointer dev);
 
 
     boolean fdt_get_path(Pointer fdt, int node_offset, byte[] path, int BUFFER_SIZE);
@@ -132,14 +133,15 @@ public interface WrapperJNA extends Library {
                 fdt_get_path(fdt, offset, path, 256);
                 //uložit offset, ten je důležitý
                 //v dropdown menu zobrazit třeba path
-                compatible = fdt_getprop(fdt, offset, "compatible", null);
+                //compatible = fdt_getprop(fdt, offset, "compatible", null);
 
-                String s = new String(path, StandardCharsets.UTF_8);
+                //String s = new String(path, StandardCharsets.UTF_8);
+                String s = Arrays.toString(path);
 
-                System.out.println(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
+                /*System.out.println(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
+                components.add(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));*/
 
-                components.add(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
-
+                components.add(s);
             }
 
             offset = fdt_next_node(fdt, offset, null);

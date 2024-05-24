@@ -14,6 +14,8 @@ public interface WrapperJNA extends Library {
     WrapperJNA wrappernfb = Native.load("nfb", WrapperJNA.class);
     WrapperJNA wrapperfdt = Native.load("fdt", WrapperJNA.class);
 
+    WrapperJNA wrapperfpga = Native.load("fpga", WrapperJNA.class);
+
 
     public enum Paths{
         BOARD_NAME("/board/", "board-name"),

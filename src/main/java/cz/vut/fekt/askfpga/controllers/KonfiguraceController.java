@@ -115,8 +115,6 @@ public class KonfiguraceController {
                 }
             }
 
-
-
         }
         else {
             outputTextField.setText("Zařízení není připojeno");
@@ -129,10 +127,19 @@ public class KonfiguraceController {
             Object[][] configArray = loadJsonData(listView.getSelectionModel().getSelectedItem());
 
             for (Object[] config : configArray) {
-                String compatible = (String) config[0];
+                String path = (String) config[0];
                 int offset = (int) config[1];
                 int data = (int) config[2];
-                //WrapperJNA.wrappernfb.nfb_comp_write(compatible, offset, data);
+
+                for(WrapperJNA.myNode component : components){
+                    if (Objects.equals(component.path, path)){
+                        WrapperJNA.wrappernfb.nfb_comp_write(component.offset, offset, data);
+                    }
+                }
+
+
+
+
             }
         }
         else {

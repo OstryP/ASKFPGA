@@ -4,8 +4,19 @@ numComboBox, automaticky získat hodnoty
 
 zapsat/zobrazit/import ButtonClick přiřadit node z dropdown menu
 
+
+
+
+
+
 načítání do comboboxu, string z byte, aby neignoroval nulu, ale aby se ukončil
 
+    graf přenos z interface, přepínat mezi interface
+    graf teploty, posledních 100s, zaznaménavat co s, restartovat při otevření stránky monitorování
+
+    0x10
+
+    Total Received Frames Counter - high part (TRFCH), spojit s low part, udělať long, shift o 32 bitů
 
 
 
@@ -23,6 +34,10 @@ Sdílené:
     card: Card name
     pci: PCI slot number of the primary endpoint
     numa: Numa node of the primary endpoint
+
+
+
+
 
     https://github.com/CESNET/ndk-sw/blob/main/tools/info/info.c
     https://cesnet.github.io/ndk-sw/tools/nfb-info.html

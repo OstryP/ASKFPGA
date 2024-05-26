@@ -1,6 +1,6 @@
 [
     {
-        "compatible": "cesnet.minimal.app_core",
+        "path": "/firmware/mi_bus0/dma_module@0x01000000/dma_ctrl_ndp_rx0",
         "offset": 0,
         "data": 1
     }

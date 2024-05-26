@@ -5,6 +5,7 @@ import com.sun.jna.ptr.IntByReference;
 import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class AppState {
     private static AppState instance;
@@ -13,7 +14,9 @@ public class AppState {
 
     private long startTime;
 
-    private XYChart.Series<Number, Number> series;
+    private XYChart.Series<Number, Number> seriesTemperature;
+
+    private XYChart.Series<Number, Number> seriesTrafficTX0;
 
     private boolean connected;
 
@@ -21,18 +24,28 @@ public class AppState {
 
     private ArrayList<Pointer> openedComponents;
 
-    private static final WrapperJNA.Paths[] infoPaths = {WrapperJNA.Paths.BOARD_NAME, WrapperJNA.Paths.BUILD_AUTHOR};
+    private static final WrapperJNA.Paths[] infoPaths = {WrapperJNA.Paths.BOARD_NAME, WrapperJNA.Paths.BUILD_AUTHOR, WrapperJNA.Paths.CARD_NAME, WrapperJNA.Paths.PROJECT_NAME};
 
     private String deviceInfo;
 
     private Pointer oRx_que;
     private Pointer oTx_que;
 
+    private Timer timer;
+
+    private boolean isMonitorovani;
+
 
 
     private AppState() {
-        series = new XYChart.Series<>();
-        series.setName("Historie teploty");
+        seriesTemperature = new XYChart.Series<>();
+        timer = new Timer();
+
+        seriesTemperature.setName("Historie teploty");
+
+        seriesTrafficTX0 = new XYChart.Series<>();
+        seriesTrafficTX0.setName("Traffic TX 0");
+
         connected = false;
         openedComponents = new ArrayList<>();
     }
@@ -68,27 +81,59 @@ public class AppState {
         this.devPointer = devPointer;
     }
 
-    public void clearSeries(){
-        series.getData().clear();
+    public void clearSeriesTemperature(){
+        seriesTemperature.getData().clear();
+    }
+
+    public void clearSeriesTrafficTX0(){
+        seriesTrafficTX0.getData().clear();
     }
 
     public void setStartTime(){
         startTime = System.currentTimeMillis();
     }
 
-    public void setCurrentTime(){
-        if (AppState.getInstance().getConnected()){
-            IntByReference val = new IntByReference(0);
-            long currentTime = System.currentTimeMillis();
-            long durationInMillis = currentTime - startTime;
-            int durationInMinutes = (int) (durationInMillis / 1000);
-
-            series.getData().add(new XYChart.Data<>(durationInMinutes, WrapperJNA.wrapperfpga.get_temperature(devPointer)));
-        }
+    public long getStartTime(){
+        return startTime;
     }
 
-    public XYChart.Series<Number, Number> getSeries(){
-        return series;
+    public void startMonitoring(){
+        timer.schedule(new AutoWrite(), 0, 1000);
+    }
+
+    public void stopMonitoring(){
+        timer.cancel();
+    }
+
+    public void setMonitorovani(boolean state){
+        this.isMonitorovani = state;
+    }
+
+    public boolean getMonitorovani(){
+        return isMonitorovani;
+    }
+
+    public XYChart.Series<Number, Number> getSeriesTemperature(){
+        return seriesTemperature;
+    }
+
+    public void setSeriesTemperature(int durationInSeconds){
+        if (seriesTemperature.getData().size() > 100) {
+            seriesTemperature.getData().removeFirst();
+        }
+        seriesTemperature.getData().add(new XYChart.Data<>(durationInSeconds, WrapperJNA.wrapperfpga.get_temperature(devPointer)));
+    }
+
+    public XYChart.Series<Number, Number> getSeriesTrafficTX0(){
+        return seriesTrafficTX0;
+    }
+
+    public void setSeriesTrafficTX0(int durationInSeconds){
+        if (seriesTrafficTX0.getData().size() > 100) {
+            seriesTrafficTX0.getData().removeFirst();
+        }
+        seriesTrafficTX0.getData().add(new XYChart.Data<>(durationInSeconds, WrapperJNA.wrappernfb.trafficSecTX()));
+
     }
 
     public ArrayList<Pointer> getOpenedComponents() {

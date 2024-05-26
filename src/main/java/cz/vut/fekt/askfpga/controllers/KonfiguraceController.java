@@ -62,7 +62,7 @@ public class KonfiguraceController {
 
     @FXML
     protected void onBackButtonClick () {
-        AppState.getInstance().setCurrentTime();
+        //AppState.getInstance().setCurrentTime();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("home-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());

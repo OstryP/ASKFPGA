@@ -1,15 +1,7 @@
-Konfigurace importButtonClick compatible zapsat jako node/int?
-Zavírat otevřené komponenty při odpojení karty
 numComboBox, automaticky získat hodnoty
 
-zapsat/zobrazit/import ButtonClick přiřadit node z dropdown menu
 
-
-
-
-
-
-načítání do comboboxu, string z byte, aby neignoroval nulu, ale aby se ukončil
+AAA načítání do comboboxu, string z byte, aby neignoroval nulu, ale aby se ukončil
 
     graf přenos z interface, přepínat mezi interface
     graf teploty, posledních 100s, zaznaménavat co s, restartovat při otevření stránky monitorování

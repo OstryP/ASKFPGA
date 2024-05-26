@@ -10,7 +10,6 @@ import java.io.IOException;
 public class AskfpgaApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
-        AppState.getInstance().setStartTime();
         FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("home-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 900, 600);
         stage.setTitle("Home");

@@ -1,9 +1,6 @@
 package cz.vut.fekt.askfpga;
 
-import com.sun.jna.Library;
-import com.sun.jna.Native;
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.*;
 import com.sun.jna.ptr.IntByReference;
 
 import java.io.IOException;
@@ -136,16 +133,15 @@ public interface WrapperJNA extends Library {
             prop = fdt_getprop(fdt, offset, "reg", len);
             if (len.getValue() != -1) {
                 fdt_get_path(fdt, offset, path, 256);
-                //uložit offset, ten je důležitý
-                //v dropdown menu zobrazit třeba path
-                //compatible = fdt_getprop(fdt, offset, "compatible", null);
 
                 String s = new String(path, StandardCharsets.UTF_8);
+
+                int nullIndex = s.indexOf('\u0000');
+                s = s.substring(0, nullIndex);
+
+                //String s = new String(path, StandardCharsets.UTF_8);
+
                 myNode newNode = new myNode(s, offset);
-
-
-                /*System.out.println(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));
-                components.add(compatible.getString(0) + s + (prop.getByte(0) << 24) + ((prop.getByte(1) & 0xff) << 16) + ((prop.getByte(2) & 0xff) << 8) + ((prop.getByte(3) & 0xff)));*/
 
                 components.add(newNode);
             }
@@ -176,62 +172,6 @@ public interface WrapperJNA extends Library {
         return comp_read32(comp, offset);
    }
 
-   /*public default void sendData(String queType, int num) throws InterruptedException {
-        if(Objects.equals(queType, "rxq")){
-            Pointer rxq = ndp_open_rx_queue(AppState.getInstance().getDevPointer(), num);
-            if (rxq!=null){
-                AppState.getInstance().setoRx_que(rxq);
-            }
-            ndp_queue_start(rxq);
-            Packet[] pkts = new Packet[NDP_PACKET_COUNT];
-
-            for (int bursts = 0; bursts < 32; bursts++) {
-                //ret 1, čeká 1-2s, pak že nebyly přijatá data
-                int ret = ndp_rx_burst_get(rxq, pkts, NDP_PACKET_COUNT);
-                if (ret == 0) {
-                    Thread.sleep(10);
-                    continue;
-                }
-
-                for (int i = 0; i < ret; i++) {
-
-                    if (pkts[i].header_length >= 8){
-                        //printf("Timestamp: %lld\n", *((uint64_t*) (pkts[i].header + 0)));
-                    }
-
-
-
-                    if ((bursts % 5) == 4){
-                        ndp_rx_burst_put(rxq);
-                    }
-                }
-            }
-            ndp_rx_burst_put(rxq);
-        }
-
-       if(Objects.equals(queType, "txq")){
-           Pointer txq = ndp_open_tx_queue(AppState.getInstance().getDevPointer(), num);
-           if (txq!=null){
-               AppState.getInstance().setoTx_que(txq);
-           }
-           ndp_queue_start(txq);
-           Packet[] pkts = new Packet[NDP_PACKET_COUNT];
-           for (int i = 0; i < NDP_PACKET_COUNT; i++) {
-               pkts[i] = new Packet();
-               pkts[i].data_length = 64 + i;
-               pkts[i].header_length = 0;
-           }
-
-           int ret = ndp_tx_burst_get(txq, pkts, NDP_PACKET_COUNT);
-
-           for (int i = 0; i < ret; i++) {
-               pkts[i].data.setByte(13, 0x80);
-           }
-
-           ndp_tx_burst_flush(txq);
-       }
-   }*/
-
     public default void importData(String fileName, int num) throws IOException {
         Pointer txq = ndp_open_tx_queue(AppState.getInstance().getDevPointer(), num);
         if (txq!=null){
@@ -255,12 +195,87 @@ public interface WrapperJNA extends Library {
         }
 
         ndp_tx_burst_flush(txq);
+    }
 
 
+    public default String trafficTX () {
+
+        StringBuilder info = new StringBuilder();
+
+        String selectedItem = "/firmware/mi_bus0/dma_module@0x01000000/dma_ctrl_ndp_rx0";
+
+        ArrayList<WrapperJNA.myNode> components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
+
+        int value;
+        int lowPart;
+        int highPart;
+        long finalValue;
+
+        for(WrapperJNA.myNode component : components){
+            if (Objects.equals(component.path, selectedItem)){
+                value = 0;
+                lowPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                value = 16;
+                highPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                finalValue = combineParts(lowPart, highPart);
+                info.append("Total Frames Counter: ").append(finalValue).append("\n");
+
+                value = 4;
+                lowPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                value = 20;
+                highPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                finalValue = combineParts(lowPart, highPart);
+                info.append("Sent Octects Counter: ").append(finalValue).append("\n");
+
+                value = 8;
+                lowPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                value = 24;
+                highPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                finalValue = combineParts(lowPart, highPart);
+                info.append("Discarted Frames Counter: ").append(finalValue).append("\n");
+
+                value = 12;
+                lowPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                value = 28;
+                highPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                finalValue = combineParts(lowPart, highPart);
+                info.append("Sent Frames Counter: ").append(finalValue).append("\n");
+
+                return info.toString();
+            }
+        }
+        return null;
+    }
+
+    public default long trafficSecTX(){
+        String selectedItem = "/firmware/mi_bus0/dma_module@0x01000000/dma_ctrl_ndp_rx0";
+
+        ArrayList<WrapperJNA.myNode> components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
+
+        int value;
+        int lowPart;
+        int highPart;
+        long finalValue;
+
+        for(WrapperJNA.myNode component : components){
+            if (Objects.equals(component.path, selectedItem)){
+                value = 12;
+                lowPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                value = 28;
+                highPart = WrapperJNA.wrapperfpga.nfb_comp_read(component.offset, value);
+                finalValue = combineParts(lowPart, highPart);
+
+                return finalValue;
+            }
+        }
+        return 0;
 
     }
 
 
+    public static long combineParts(int lowPart, int highPart) {
+        return ((long) highPart << 32) | (lowPart & 0xFFFFFFFFL);
+    }
 
 
 

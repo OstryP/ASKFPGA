@@ -32,7 +32,7 @@ public class MonitorovaniController {
 
     private static MonitorovaniController instance;
 
-    public static synchronized MonitorovaniController getInstance() {
+    public static MonitorovaniController getInstance() {
         if (instance == null) {
             instance = new MonitorovaniController();
         }
@@ -54,8 +54,10 @@ public class MonitorovaniController {
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
             podrobneinfoTextArea.setText(WrapperJNA.wrappernfb.trafficTX());
         }
-        AppState.getInstance().setMonitorovani(true);
-        AppState.getInstance().startMonitoring();
+        grafLineChart.getData().add(AppState.getInstance().getSeriesTemperature());
+
+        //AppState.getInstance().setMonitorovani(true);
+        //AppState.getInstance().startMonitoring();
     }
 
     public void updateData() {

@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -89,8 +91,18 @@ public interface WrapperJNA extends Library {
         public Pointer header;
         public int data_length;
         public int header_length;
-        public Packet() {
+        public Packet(Pointer data, Pointer header, int data_length, int header_length) {
+            this.data = data;
+            this.header = header;
+            this.data_length = data_length;
+            this.header_length = header_length;
         }
+
+        @Override
+        protected List<String> getFieldOrder(){
+            return Arrays.asList("data", "header", "data_length", "header_length");
+        }
+
     }
 
     public class myNode {
@@ -184,8 +196,8 @@ public interface WrapperJNA extends Library {
         Path filePath = directoryPath.resolve(fileName).normalize();
         byte[] byteFiles = Files.readAllBytes(filePath);
 
-        Packet pkts = new Packet();
-        pkts.data_length = byteFiles.length;
+        Packet pkts = new Packet(null, null, byteFiles.length, NDP_PACKET_COUNT);
+
         int ret = ndp_tx_burst_get(txq, pkts, 1);
 
         for (int i = 0; i<byteFiles.length; i++){

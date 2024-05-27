@@ -1,6 +1,7 @@
 package cz.vut.fekt.askfpga;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.IntByReference;
 import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class AppState {
 
     private AppState() {
         seriesTemperature = new XYChart.Series<>();
-        timer = new Timer();
+        //timer = new Timer();
 
         seriesTemperature.setName("Historie teploty");
 
@@ -56,6 +57,16 @@ public class AppState {
             instance = new AppState();
         }
         return instance;
+    }
+
+    public void setCurrentTime(){
+        if(AppState.getInstance().getConnected()){
+            long currentTime = System.currentTimeMillis();
+            long durationInMilis = currentTime - startTime;
+            int durationInSeconds = (int) (durationInMilis / 1000);
+
+            seriesTemperature.getData().add(new XYChart.Data<>(durationInSeconds, WrapperJNA.wrapperfpga.get_temperature(devPointer)));
+        }
     }
 
     public String getZarizeni() {

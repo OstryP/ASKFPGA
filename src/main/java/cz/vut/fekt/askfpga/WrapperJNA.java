@@ -196,7 +196,7 @@ public interface WrapperJNA extends Library {
         Path filePath = directoryPath.resolve(fileName).normalize();
         byte[] byteFiles = Files.readAllBytes(filePath);
 
-        Packet pkts = new Packet(null, null, byteFiles.length, NDP_PACKET_COUNT);
+        Packet pkts = new Packet(Pointer.NULL, Pointer.NULL, byteFiles.length, NDP_PACKET_COUNT);
 
         int ret = ndp_tx_burst_get(txq, pkts, 1);
 

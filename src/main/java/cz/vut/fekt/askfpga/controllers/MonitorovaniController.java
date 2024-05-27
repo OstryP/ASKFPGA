@@ -72,8 +72,8 @@ public class MonitorovaniController {
 
     @FXML
     protected void onBackButtonClick () {
-        AppState.getInstance().setMonitorovani(false);
-        AppState.getInstance().stopMonitoring();
+        //AppState.getInstance().setMonitorovani(false);
+        //AppState.getInstance().stopMonitoring();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("home-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());

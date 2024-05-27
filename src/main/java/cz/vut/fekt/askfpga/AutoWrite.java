@@ -1,8 +1,6 @@
 package cz.vut.fekt.askfpga;
 
-import com.sun.jna.ptr.IntByReference;
 import cz.vut.fekt.askfpga.controllers.MonitorovaniController;
-import javafx.scene.chart.XYChart;
 
 import java.util.TimerTask;
 

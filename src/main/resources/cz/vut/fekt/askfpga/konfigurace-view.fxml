@@ -84,7 +84,7 @@
                            </font></Button>
                      </children>
                   </HBox>
-                  <TextArea fx:id="infoTextArea" prefHeight="127.0" prefWidth="665.0">
+                  <TextArea fx:id="infoTextArea" prefHeight="127.0" prefWidth="665.0" promptText="Informace o kartě">
                      <VBox.margin>
                         <Insets left="50.0" right="50.0" />
                      </VBox.margin></TextArea>

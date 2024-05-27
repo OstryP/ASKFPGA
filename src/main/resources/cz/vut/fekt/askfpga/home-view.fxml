@@ -34,7 +34,7 @@
                   <Font size="20.0" />
                </font>
             </Button>
-            <TextArea fx:id="infoTextArea" editable="false" maxHeight="200.0" maxWidth="400.0" prefHeight="150.0" prefWidth="800.0" promptText="ZADNE ZARIZENI" />
+            <TextArea fx:id="infoTextArea" editable="false" maxHeight="200.0" maxWidth="400.0" prefHeight="150.0" prefWidth="800.0" promptText="Žádné zařízení" />
             <HBox prefHeight="35.0" prefWidth="708.0" spacing="30.0">
                <children>
                   <TextField fx:id="connectTextField" prefHeight="38.0" prefWidth="149.0" text="0" />

@@ -51,7 +51,6 @@ public class HomeController {
 
     @FXML
     protected void onKonfiguraceButtonClick () {
-        //AppState.getInstance().setCurrentTime();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("konfigurace-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -66,7 +65,6 @@ public class HomeController {
 
     @FXML
     protected void onMonitorovaniButtonClick (){
-        //AppState.getInstance().setCurrentTime();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("monitorovani-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -80,7 +78,6 @@ public class HomeController {
 
     @FXML
     protected void onRizeniButtonClick (){
-        //AppState.getInstance().setCurrentTime();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("rizeni-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -141,8 +138,6 @@ public class HomeController {
                 AppState.getInstance().setDeviceInfo();
                 infoTextArea.setText(AppState.getInstance().getDeviceInfo());
                 connectButton.setText("Disconnect");
-
-                //WrapperJNA.wrappernfb.print_component_list(devPointer);
             }
         }
     }

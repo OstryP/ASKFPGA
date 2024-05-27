@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -15,7 +14,6 @@ import java.util.Objects;
 public interface WrapperJNA extends Library {
     WrapperJNA wrappernfb = Native.load("nfb", WrapperJNA.class);
     WrapperJNA wrapperfdt = Native.load("fdt", WrapperJNA.class);
-
     WrapperJNA wrapperfpga = Native.load("fpga", WrapperJNA.class);
 
 

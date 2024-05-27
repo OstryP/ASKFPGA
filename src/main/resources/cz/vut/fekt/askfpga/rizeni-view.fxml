@@ -53,8 +53,8 @@
                         <ComboBox fx:id="numComboBox" prefHeight="30.0" prefWidth="150.0" promptText="Číslo rozhraní" />
                      </children>
                   </HBox>
-                  <TextArea fx:id="transTextArea" prefHeight="200.0" prefWidth="200.0" text="Informace o přenosu" />
-                  <TextArea fx:id="infoTextArea" prefHeight="200.0" prefWidth="200.0" text="Informace o kartě" />
+                  <TextArea fx:id="transTextArea" prefHeight="200.0" prefWidth="200.0" promptText="Informace o přenosu" />
+                  <TextArea fx:id="infoTextArea" prefHeight="200.0" prefWidth="200.0" promptText="Informace o kartě" />
                </children>
                <padding>
                   <Insets bottom="20.0" left="20.0" right="20.0" top="25.0" />

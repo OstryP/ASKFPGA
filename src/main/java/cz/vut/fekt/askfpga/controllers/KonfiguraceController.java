@@ -62,7 +62,6 @@ public class KonfiguraceController {
 
     @FXML
     protected void onBackButtonClick () {
-        //AppState.getInstance().setCurrentTime();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("home-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -136,10 +135,6 @@ public class KonfiguraceController {
                         WrapperJNA.wrappernfb.nfb_comp_write(component.offset, offset, data);
                     }
                 }
-
-
-
-
             }
         }
         else {
@@ -161,11 +156,11 @@ public class KonfiguraceController {
         for (int i = 0; i < jsonArray.length(); i++) {
             JSONObject config = jsonArray.getJSONObject(i);
 
-            String compatible = config.getString("compatible");
+            String path = config.getString("path");
             int offset = config.getInt("offset");
             int data = config.getInt("data");
 
-            configArray[i][0] = compatible;
+            configArray[i][0] = path;
             configArray[i][1] = offset;
             configArray[i][2] = data;
         }
@@ -187,8 +182,4 @@ public class KonfiguraceController {
             e.printStackTrace();
         }
     }
-
-
-
-
 }

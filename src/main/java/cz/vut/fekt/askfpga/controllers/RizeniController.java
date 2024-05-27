@@ -48,7 +48,6 @@ public class RizeniController {
 
     @FXML
     protected void onBackButtonClick () {
-        //AppState.getInstance().setCurrentTime();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("home-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
@@ -62,10 +61,7 @@ public class RizeniController {
 
     @FXML
     protected void onPoslatButtonClick () throws IOException {
-        //WrapperJNA.wrappernfb.sendData(rozhraniComboBox.getSelectionModel().getSelectedItem(), Integer.parseInt(numComboBox.getSelectionModel().getSelectedItem()));
         WrapperJNA.wrappernfb.importData(listView.getSelectionModel().getSelectedItem(), Integer.parseInt(numComboBox.getSelectionModel().getSelectedItem()));
-        //https://cesnet.github.io/ndk-sw/libnfb-example.html#ndp-data-transmit-example
-        //zobrait data, povolit jejich upravu, nezavirat dokud nevypnu celou applikaci
     }
 
 

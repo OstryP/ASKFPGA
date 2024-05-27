@@ -38,7 +38,7 @@
                             <NumberAxis side="LEFT" />
                           </yAxis>
                         </LineChart>
-                        <TextArea fx:id="podrobneinfoTextArea" prefHeight="200.0" prefWidth="200.0" />
+                        <TextArea fx:id="podrobneinfoTextArea" prefHeight="200.0" prefWidth="200.0" promptText="Informace o přenosu" />
                      </children>
                   </VBox>
                   <VBox prefHeight="450.0" prefWidth="400.0" spacing="20.0">
@@ -51,7 +51,7 @@
                             <NumberAxis side="LEFT" />
                           </yAxis>
                         </LineChart>
-                        <TextArea fx:id="infoTextArea" prefHeight="200.0" prefWidth="200.0" />
+                        <TextArea fx:id="infoTextArea" prefHeight="200.0" prefWidth="200.0" promptText="Informace o kartě" />
                      </children>
                   </VBox>
                </children>

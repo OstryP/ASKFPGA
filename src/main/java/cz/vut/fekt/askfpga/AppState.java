@@ -1,7 +1,6 @@
 package cz.vut.fekt.askfpga;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
 import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
@@ -34,6 +33,8 @@ public class AppState {
     private Timer timer;
 
     private boolean isMonitorovani;
+
+    private Long trafficTXCount;
 
 
 
@@ -129,11 +130,19 @@ public class AppState {
     }
 
     public void setSeriesTrafficTX0(int durationInSeconds){
+        long trafficSecTX = WrapperJNA.wrappernfb.trafficSecTX();
+
         if (seriesTrafficTX0.getData().size() > 100) {
             seriesTrafficTX0.getData().removeFirst();
         }
-        seriesTrafficTX0.getData().add(new XYChart.Data<>(durationInSeconds, WrapperJNA.wrappernfb.trafficSecTX()));
-
+        if (!seriesTrafficTX0.getData().isEmpty()){
+            seriesTrafficTX0.getData().add(new XYChart.Data<>(durationInSeconds, trafficSecTX-trafficTXCount));
+            trafficTXCount = trafficSecTX;
+        }
+        else{
+            trafficTXCount = trafficSecTX;
+            seriesTrafficTX0.getData().add(new XYChart.Data<>(durationInSeconds, 0L));
+        }
     }
 
     public ArrayList<Pointer> getOpenedComponents() {

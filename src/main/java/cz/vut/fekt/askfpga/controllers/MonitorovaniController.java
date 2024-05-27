@@ -44,10 +44,10 @@ public class MonitorovaniController {
     public void initialize() {
         System.out.println("Inicializace");
 
-        grafLineChart.getXAxis().setLabel("Čas v minutách");
+        grafLineChart.getXAxis().setLabel("Čas v sekundách");
         grafLineChart.getYAxis().setLabel("Teplota ve °C");
 
-        prenosLineChart.getXAxis().setLabel("Čas v minutách");
+        prenosLineChart.getXAxis().setLabel("Čas v sekundách");
         prenosLineChart.getYAxis().setLabel("Počet přenesených paketů za sekundu");
 
         if(AppState.getInstance().getConnected()){

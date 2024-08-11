@@ -4,9 +4,12 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
+
+/**
+ * Spuštění aplikace, zobrazení hlavní stránky
+ */
 public class AskfpgaApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {

@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -56,15 +57,21 @@
                         <TextField fx:id="offsetTextField" prefHeight="30.0" prefWidth="140.0" promptText="Požadovyný offset">
                            <font>
                               <Font size="15.0" />
-                           </font></TextField>
+                           </font>
+                           <tooltip>
+                              <Tooltip text="Zadejte požadovaný offset v rámci zvolené komponenty, mělo by se jednat o celé nezáporné číslo" />
+                           </tooltip></TextField>
                         <Button fx:id="zobrazitButton" mnemonicParsing="false" onAction="#onZobrazitButtonClick" text="Zobrazit">
                            <font>
                               <Font size="15.0" />
                            </font></Button>
-                        <TextField fx:id="outputTextField" prefHeight="31.0" prefWidth="145.0" promptText="Výpis paměti">
+                        <TextField fx:id="outputTextField" editable="false" prefHeight="31.0" prefWidth="145.0" promptText="Výpis paměti">
                            <font>
                               <Font size="15.0" />
                            </font>
+                           <tooltip>
+                              <Tooltip text="Zde budou zabrazena data z vybrané komponenty a jejího offsetu" />
+                           </tooltip>
                         </TextField>
                      </children>
                   </HBox>
@@ -77,14 +84,17 @@
                         <TextField fx:id="valTextField" prefHeight="25.0" prefWidth="113.0" promptText="Hodnota">
                            <font>
                               <Font size="15.0" />
-                           </font></TextField>
+                           </font>
+                           <tooltip>
+                              <Tooltip text="Zadejte hodnotu dat pro zápis do zvolené komponenty a zvoleného offsetu, mělo by se jednat o celé nezáporné číslo" />
+                           </tooltip></TextField>
                         <Button fx:id="zapsatButton" mnemonicParsing="false" onAction="#onZapsatButtonClick" text="Zapsat">
                            <font>
                               <Font size="15.0" />
                            </font></Button>
                      </children>
                   </HBox>
-                  <TextArea fx:id="infoTextArea" prefHeight="127.0" prefWidth="665.0" promptText="Informace o kartě">
+                  <TextArea fx:id="infoTextArea" editable="false" prefHeight="127.0" prefWidth="665.0" promptText="Informace o kartě">
                      <VBox.margin>
                         <Insets left="50.0" right="50.0" />
                      </VBox.margin></TextArea>

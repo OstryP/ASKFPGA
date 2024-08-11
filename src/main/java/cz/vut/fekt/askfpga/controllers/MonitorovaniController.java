@@ -13,8 +13,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+/**
+ * Logika ovládání stránky Monitorování
+ */
 public class MonitorovaniController {
 
+    //Napojení na FXML prvky
     @FXML
     private Button backButton;
 
@@ -40,10 +44,12 @@ public class MonitorovaniController {
     }
 
 
-
+    /**
+     * Proběhne při načtení monitorovani-view.fxml, získá informace o stavu aplikace a provede příslušné změny vzhledu/funkcionality stránky
+     */
     public void initialize() {
-        System.out.println("Inicializace");
 
+        //Nastavení grafů
         grafLineChart.getXAxis().setLabel("Čas v sekundách");
         grafLineChart.getYAxis().setLabel("Teplota ve °C");
 
@@ -60,6 +66,9 @@ public class MonitorovaniController {
         //AppState.getInstance().startMonitoring();
     }
 
+    /**
+     * Slouží k aktualizaci dat v grafech a v textové oblasti
+     */
     public void updateData() {
         if(AppState.getInstance().getConnected()){
             if (AppState.getInstance()!=null){
@@ -70,6 +79,9 @@ public class MonitorovaniController {
         }
     }
 
+    /**
+     * Návrat na Hlavní stránku
+     */
     @FXML
     protected void onBackButtonClick () {
         //AppState.getInstance().setMonitorovani(false);

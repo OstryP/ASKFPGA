@@ -12,13 +12,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-
+/**
+ * Wrapper který slouží pro komunikaci s knihovnou v C, pomocí JNA
+ */
 public interface WrapperJNA extends Library {
     WrapperJNA wrappernfb = Native.load("nfb", WrapperJNA.class);
     WrapperJNA wrapperfdt = Native.load("fdt", WrapperJNA.class);
     WrapperJNA wrapperfpga = Native.load("fpga", WrapperJNA.class);
 
 
+    /**
+     * Cesty k jednotlivým komponentům
+     */
     public enum Paths{
         BOARD_NAME("/board/", "board-name"),
         SERIAL_NUMBER("/board/", "serial-number"),
@@ -38,6 +43,8 @@ public interface WrapperJNA extends Library {
     }
     int BufferSize = 256;
 
+
+    //Namapování funkcí z knihovny C
     Pointer nfb_open(String name);
 
     void nfb_close(Pointer dev);
@@ -86,6 +93,9 @@ public interface WrapperJNA extends Library {
     void ndp_close_rx_queue(Pointer rxq);
 
 
+    /**
+     * Zrcadlení struktury Packetu vůči knihovně v C
+     */
     public class Packet extends Structure {
         public Pointer data;
         public Pointer header;
@@ -105,6 +115,9 @@ public interface WrapperJNA extends Library {
 
     }
 
+    /**
+     * Zrcadlení struktury Node vůči knihovně v C
+     */
     public class myNode {
         public String path;
         public int offset;
@@ -115,6 +128,12 @@ public interface WrapperJNA extends Library {
         }
     }
 
+    /**
+     * Získání hodnoty specifikované vlastnosti z FPGA karty
+     * @param dev Ukazatel na zařízení
+     * @param prop Cesta k vlastnosti
+     * @return Hodnota vlastnosti
+     */
    public default String getProp(Pointer dev, Paths prop){
         Pointer fdt;
         fdt = nfb_get_fdt(dev);
@@ -129,6 +148,11 @@ public interface WrapperJNA extends Library {
         return s;
     }
 
+    /**
+     * Slouží k získání seznamu komponent na FPGA kartě
+     * @param dev Ukazatel na zařízení
+     * @return Seznam komponent
+     */
     public default ArrayList<myNode> print_component_list(Pointer dev){
         Pointer fdt;
         fdt = nfb_get_fdt(dev);
@@ -160,6 +184,13 @@ public interface WrapperJNA extends Library {
         }
         return components;
     }
+
+    /**
+     * Slouží k zápisu do specifické kompenenty
+     * @param node Kam se zapisuje
+     * @param offset Na jaké místo (offset) se zapisuje
+     * @param data Co se zapisuje
+     */
     public default void nfb_comp_write(int node, int offset, int data){
 
 
@@ -170,6 +201,12 @@ public interface WrapperJNA extends Library {
         comp_write32(comp, offset, data);
     }
 
+    /**
+     * Slouží ke čtení z komponenty
+     * @param node Odkud se čte
+     * @param offset Z jakého offsetu v rámci komponenty se čte
+     * @return Data ze specifikovaného místa
+     */
     public default int nfb_comp_read(int node, int offset){
         /*if (!AppState.getInstance().getOpenedComponents().contains(node)) {
             Pointer comp = nfb_comp_open(AppState.getInstance().getDevPointer(), node);
@@ -182,6 +219,12 @@ public interface WrapperJNA extends Library {
         return comp_read32(comp, offset);
    }
 
+    /**
+     * Slouží k zahájení přenosu dat
+     * @param fileName Z jakého souboru jsou data čerpána
+     * @param num Jakým kanálem jsou data přenášena
+     * @throws IOException
+     */
     public default void importData(String fileName, int num) throws IOException {
         Pointer txq = ndp_open_tx_queue(AppState.getInstance().getDevPointer(), num);
         if (txq!=null){
@@ -208,6 +251,10 @@ public interface WrapperJNA extends Library {
     }
 
 
+    /**
+     * Slouží k zobrazaní informací o přenosu dat
+     * @return Informace o přenosu
+     */
     public default String trafficTX () {
 
         StringBuilder info = new StringBuilder();
@@ -257,6 +304,10 @@ public interface WrapperJNA extends Library {
         return null;
     }
 
+    /**
+     * Informace o přenosu pro graf
+     * @return Kolik bylo přeneseno dat
+     */
     public default long trafficSecTX(){
         String selectedItem = "/firmware/mi_bus0/dma_module@0x01000000/dma_ctrl_ndp_rx0";
 
@@ -283,6 +334,12 @@ public interface WrapperJNA extends Library {
     }
 
 
+    /**
+     * Slouží ke spojení horní a dolní části čísla, int na long
+     * @param lowPart Spodní int
+     * @param highPart Horní int
+     * @return Spojený long
+     */
     public static long combineParts(int lowPart, int highPart) {
         return ((long) highPart << 32) | (lowPart & 0xFFFFFFFFL);
     }

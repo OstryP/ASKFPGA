@@ -6,10 +6,7 @@ import cz.vut.fekt.askfpga.WrapperJNA;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -17,8 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Logika ovládání stránky Řízení
+ */
 public class RizeniController {
 
+    //Napojení na FXML prvky
     @FXML
     private Button backButton;
 
@@ -33,6 +34,9 @@ public class RizeniController {
 
     @FXML TextArea transTextArea;
 
+    /**
+     * Proběhne při načtení rizeni-view.fxml, získá informace o stavu aplikace a provede příslušné změny vzhledu/funkcionality stránky
+     */
     public void initialize() {
         if(AppState.getInstance().getConnected()){
             infoTextArea.setText(AppState.getInstance().getDeviceInfo());
@@ -46,6 +50,9 @@ public class RizeniController {
         ListFilesInDirectory();
     }
 
+    /**
+     * Návrat na Hlavní stránku
+     */
     @FXML
     protected void onBackButtonClick () {
         try {
@@ -59,12 +66,31 @@ public class RizeniController {
         }
     }
 
+    /**
+     * Zahájení přenosu dat
+     * @throws IOException
+     */
     @FXML
     protected void onPoslatButtonClick () throws IOException {
-        WrapperJNA.wrappernfb.importData(listView.getSelectionModel().getSelectedItem(), Integer.parseInt(numComboBox.getSelectionModel().getSelectedItem()));
+        //Kontrola jestli je zvolen datový soubor
+        if(listView.getSelectionModel().getSelectedItem()==null){
+            new Alert(Alert.AlertType.ERROR, "Je potřeba vybrat soubor s daty").showAndWait();
+        }
+        else{
+            //Kontrola jestli je zvoleno rozhraní
+            if(numComboBox.getSelectionModel().getSelectedItem()==null){
+                new Alert(Alert.AlertType.ERROR, "Je potřeba zvolit rozhraní").showAndWait();
+            }
+            else {
+                WrapperJNA.wrappernfb.importData(listView.getSelectionModel().getSelectedItem(), Integer.parseInt(numComboBox.getSelectionModel().getSelectedItem()));
+            }
+        }
     }
 
 
+    /**
+     * Výpis souborů ve složce
+     */
     void ListFilesInDirectory() {
         String currentDirectory = System.getProperty("user.dir");
 
@@ -80,11 +106,12 @@ public class RizeniController {
         }
     }
 
+    /**
+     * Obnovení výpisu souborů ze složky
+     */
     @FXML
     protected void onObnovitButtonClick () {
         listView.getItems().clear();
         ListFilesInDirectory();
     }
-
-
 }

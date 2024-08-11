@@ -5,10 +5,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.vut.fekt.askfpga.controllers.HomeController">
    <children>
@@ -34,10 +36,13 @@
                   <Font size="20.0" />
                </font>
             </Button>
-            <TextArea fx:id="infoTextArea" editable="false" maxHeight="200.0" maxWidth="400.0" prefHeight="150.0" prefWidth="800.0" promptText="Žádné zařízení" />
+            <TextArea fx:id="infoTextArea" editable="false" maxHeight="200.0" maxWidth="400.0" prefHeight="150.0" prefWidth="800.0" promptText="Žádné připojené zařízení" />
             <HBox prefHeight="35.0" prefWidth="708.0" spacing="30.0">
                <children>
-                  <TextField fx:id="connectTextField" prefHeight="38.0" prefWidth="149.0" text="0" />
+                  <TextField fx:id="connectTextField" prefHeight="38.0" prefWidth="149.0" promptText="Zadejte číslo FPGA karty">
+                     <tooltip>
+                        <Tooltip text="Zadejte číslo FPGA karty, ke které se chcete připojit. Číslování začíná nulou. Mělo by se jednat o celé číslo" />
+                     </tooltip></TextField>
                   <Button fx:id="connectButton" mnemonicParsing="false" onAction="#onConnectButtonClick" prefHeight="35.0" text="Connect">
                      <font>
                         <Font size="15.0" />
@@ -53,5 +58,6 @@
             <Insets bottom="25.0" left="50.0" right="50.0" top="25.0" />
          </padding>
       </VBox>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Všechy pole pro zadání dat obsahují podrobnou nápovědu, stačí na ně najet myší" wrappingWidth="200.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="150.0" />
    </children>
 </AnchorPane>

@@ -118,6 +118,10 @@ public class HomeController {
 
         //Kontrola, jestli je aplikace připojena ke kartě, pokud ano, dojde k uzavření otevřených modulů, odpojení a změně stavu v AppState
         if (AppState.getInstance().getConnected()){
+            if(AppState.getInstance().getMonitorovani()){
+                AppState.getInstance().setMonitorovani(false);
+                AppState.stopMonitoring();
+            }
 
             if(AppState.getInstance().getoRx_que()!=null){
                 WrapperJNA.wrappernfb.ndp_close_rx_queue(AppState.getInstance().getoRx_que());
@@ -169,6 +173,10 @@ public class HomeController {
                 AppState.getInstance().setStartTime();
                 AppState.getInstance().setDeviceInfo();
                 infoTextArea.setText(AppState.getInstance().getDeviceInfo());
+
+                AppState.getInstance().setMonitorovani(true);
+                AppState.startMonitoring();
+
                 connectButton.setText("Disconnect");
             }
         }

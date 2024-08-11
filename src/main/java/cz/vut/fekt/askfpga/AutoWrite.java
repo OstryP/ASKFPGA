@@ -1,6 +1,7 @@
 package cz.vut.fekt.askfpga;
 
 import cz.vut.fekt.askfpga.controllers.MonitorovaniController;
+import javafx.application.Platform;
 
 import java.util.TimerTask;
 
@@ -12,15 +13,21 @@ public class AutoWrite extends TimerTask {
             long durationInMillis = currentTime - AppState.getInstance().getStartTime();
             int durationInSeconds = (int) (durationInMillis / 1000);
 
-            AppState.getInstance().setSeriesTemperature(durationInSeconds);
-            AppState.getInstance().setSeriesTrafficTX0(durationInSeconds);
+            Platform.runLater(() -> {
+                AppState.getInstance().setSeriesTemperature(durationInSeconds);
+                AppState.getInstance().setSeriesTrafficTX0(durationInSeconds);
+            });
         }
     }
 
     public void run() {
         if(AppState.getInstance().getMonitorovani()){
             setCurrentData();
-            MonitorovaniController.getInstance().updateData();
+            /*Platform.runLater(() -> {
+                MonitorovaniController.getInstance().updateData();
+            });
+
+             */
         }
     }
 

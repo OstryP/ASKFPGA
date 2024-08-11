@@ -61,23 +61,23 @@ public class MonitorovaniController {
             podrobneinfoTextArea.setText(WrapperJNA.wrappernfb.trafficTX());
         }
         grafLineChart.getData().add(AppState.getInstance().getSeriesTemperature());
-
+        prenosLineChart.getData().add(AppState.getInstance().getSeriesTrafficTX0());
         //AppState.getInstance().setMonitorovani(true);
         //AppState.getInstance().startMonitoring();
     }
 
-    /**
-     * Slouží k aktualizaci dat v grafech a v textové oblasti
-     */
+    /*
     public void updateData() {
         if(AppState.getInstance().getConnected()){
             if (AppState.getInstance()!=null){
                 grafLineChart.getData().add(AppState.getInstance().getSeriesTemperature());
-                prenosLineChart.getData().add(AppState.getInstance().getSeriesTrafficTX0());
+                prenosLineChart.getData().add(AppState.getInstance().getSeriesTemperature());
+                //getSeriesTrafficTX0
                 podrobneinfoTextArea.setText(WrapperJNA.wrappernfb.trafficTX());
             }
         }
     }
+     */
 
     /**
      * Návrat na Hlavní stránku

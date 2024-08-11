@@ -6,6 +6,7 @@ import javafx.scene.chart.XYChart;
 
 import java.util.ArrayList;
 import java.util.Timer;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -35,7 +36,7 @@ public class AppState {
     private Pointer oRx_que;
     private Pointer oTx_que;
 
-    private Timer timer;
+    private static Timer timer;
 
     private boolean isMonitorovani;
 
@@ -163,14 +164,16 @@ public class AppState {
     /**
      * Spuštění automatického monitorování
      */
-    public void startMonitoring(){
-        timer.schedule(new AutoWrite(), 0, 1000);
+    public static void startMonitoring(){
+        //AppState.getInstance().setStartTime();
+        timer = new Timer(); // Initialize the Timer
+        timer.scheduleAtFixedRate(new AutoWrite(), 0, 1000); // Schedule the task
     }
 
     /**
      * Ukončení automatického monitorování
      */
-    public void stopMonitoring(){
+    public static void stopMonitoring(){
         timer.cancel();
     }
 
@@ -207,6 +210,7 @@ public class AppState {
             seriesTemperature.getData().removeFirst();
         }
         seriesTemperature.getData().add(new XYChart.Data<>(durationInSeconds, WrapperJNA.wrapperfpga.get_temperature(devPointer)));
+        //seriesTemperature.getData().add(new XYChart.Data<>(durationInSeconds, 10));
     }
 
     /**
@@ -223,6 +227,7 @@ public class AppState {
      */
     public void setSeriesTrafficTX0(int durationInSeconds){
         long trafficSecTX = WrapperJNA.wrappernfb.trafficSecTX();
+        //long trafficSecTX = ThreadLocalRandom.current().nextLong(10, 51);
 
         if (seriesTrafficTX0.getData().size() > 100) {
             seriesTrafficTX0.getData().removeFirst();

@@ -259,7 +259,7 @@ public interface WrapperJNA extends Library {
 
         StringBuilder info = new StringBuilder();
 
-        String selectedItem = "/firmware/mi_bus0/dma_module@0x01000000/dma_ctrl_ndp_rx0";
+        String selectedItem = "/firmware/mi_bus0/txmac0";
 
         ArrayList<WrapperJNA.myNode> components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
 
@@ -309,7 +309,7 @@ public interface WrapperJNA extends Library {
      * @return Kolik bylo přeneseno dat
      */
     public default long trafficSecTX(){
-        String selectedItem = "/firmware/mi_bus0/dma_module@0x01000000/dma_ctrl_ndp_rx0";
+        String selectedItem = "/firmware/mi_bus0/txmac0";
 
         ArrayList<WrapperJNA.myNode> components = WrapperJNA.wrappernfb.print_component_list(AppState.getInstance().getDevPointer());
 

@@ -23,11 +23,6 @@ public class AutoWrite extends TimerTask {
     public void run() {
         if(AppState.getInstance().getMonitorovani()){
             setCurrentData();
-            /*Platform.runLater(() -> {
-                MonitorovaniController.getInstance().updateData();
-            });
-
-             */
         }
     }
 

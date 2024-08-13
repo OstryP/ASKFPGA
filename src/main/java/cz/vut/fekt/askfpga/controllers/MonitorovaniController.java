@@ -62,30 +62,14 @@ public class MonitorovaniController {
         }
         grafLineChart.getData().add(AppState.getInstance().getSeriesTemperature());
         prenosLineChart.getData().add(AppState.getInstance().getSeriesTrafficTX0());
-        //AppState.getInstance().setMonitorovani(true);
-        //AppState.getInstance().startMonitoring();
     }
 
-    /*
-    public void updateData() {
-        if(AppState.getInstance().getConnected()){
-            if (AppState.getInstance()!=null){
-                grafLineChart.getData().add(AppState.getInstance().getSeriesTemperature());
-                prenosLineChart.getData().add(AppState.getInstance().getSeriesTemperature());
-                //getSeriesTrafficTX0
-                podrobneinfoTextArea.setText(WrapperJNA.wrappernfb.trafficTX());
-            }
-        }
-    }
-     */
 
     /**
      * Návrat na Hlavní stránku
      */
     @FXML
     protected void onBackButtonClick () {
-        //AppState.getInstance().setMonitorovani(false);
-        //AppState.getInstance().stopMonitoring();
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(AskfpgaApp.class.getResource("home-view.fxml"));
             Scene scene = new Scene(fxmlLoader.load());
